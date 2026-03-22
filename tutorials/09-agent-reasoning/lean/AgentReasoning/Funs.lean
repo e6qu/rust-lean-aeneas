@@ -47,10 +47,10 @@ def is_terminal (phase : AgentPhase) : Bool :=
 /-- Map a step to its phase-order tag. -/
 def chain_step_order (step : Step) : U32 :=
   match step with
-  | .Observe _ => ⟨0, by omega⟩
-  | .Think _   => ⟨1, by omega⟩
-  | .Decide _  => ⟨2, by omega⟩
-  | .Act _     => ⟨3, by omega⟩
+  | .Observe _ => ⟨0⟩
+  | .Think _   => ⟨1⟩
+  | .Decide _  => ⟨2⟩
+  | .Act _     => ⟨3⟩
 
 /-- Check that a reasoning chain is well-formed (monotonically non-decreasing order). -/
 def is_chain_well_formed_aux : List Step → U32 → Bool
@@ -105,15 +105,15 @@ def validate_tool_call (spec : ToolSpec) (args : ToolCallArgs) : Bool :=
 /-- Create the initial retry state. -/
 def initial_retry_state (max_attempts : U32) (base_delay_ms : U32) (max_delay_ms : U32)
     : RetryState :=
-  { attempt := ⟨0, by omega⟩, delay_ms := base_delay_ms, max_attempts, base_delay_ms, max_delay_ms }
+  { attempt := ⟨0⟩, delay_ms := base_delay_ms, max_attempts, base_delay_ms, max_delay_ms }
 
 /-- Advance to the next retry. Returns none if max exceeded. -/
 def next_retry (state : RetryState) : Option RetryState :=
   if state.attempt.val ≥ state.max_attempts.val then none
   else
-    let new_attempt : U32 := ⟨state.attempt.val + 1, by sorry⟩
+    let new_attempt : U32 := ⟨state.attempt.val + 1⟩
     let doubled := state.delay_ms.val * 2
-    let new_delay : U32 := ⟨min doubled state.max_delay_ms.val, by sorry⟩
+    let new_delay : U32 := ⟨min doubled state.max_delay_ms.val⟩
     some { state with attempt := new_attempt, delay_ms := new_delay }
 
 /-- Returns true if another retry is allowed. -/
@@ -147,7 +147,7 @@ def agent_step (config : AgentConfig) (snapshot : AgentSnapshot) (event : AgentE
     match agent_transition snapshot.phase event with
     | none => none
     | some (next_phase, action) =>
-      let new_count : U32 := ⟨snapshot.step_count.val + 1, by sorry⟩
+      let new_count : U32 := ⟨snapshot.step_count.val + 1⟩
       some {
         phase := next_phase
         reasoning_chain := snapshot.reasoning_chain

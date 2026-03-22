@@ -12,22 +12,22 @@ namespace message_protocol
 
 /-- Encode a U32 as 4 big-endian bytes. -/
 def write_u32_be (val : U32) : List U8 :=
-  let b3 : U8 := ⟨(val.val >>> 24) % 256, by omega⟩
-  let b2 : U8 := ⟨(val.val >>> 16) % 256, by omega⟩
-  let b1 : U8 := ⟨(val.val >>> 8) % 256, by omega⟩
-  let b0 : U8 := ⟨val.val % 256, by omega⟩
+  let b3 : U8 := ⟨(val.val >>> 24) % 256⟩
+  let b2 : U8 := ⟨(val.val >>> 16) % 256⟩
+  let b1 : U8 := ⟨(val.val >>> 8) % 256⟩
+  let b0 : U8 := ⟨val.val % 256⟩
   [b3, b2, b1, b0]
 
 /-- Encode a U64 as 8 big-endian bytes. -/
 def write_u64_be (val : U64) : List U8 :=
-  let b7 : U8 := ⟨(val.val >>> 56) % 256, by omega⟩
-  let b6 : U8 := ⟨(val.val >>> 48) % 256, by omega⟩
-  let b5 : U8 := ⟨(val.val >>> 40) % 256, by omega⟩
-  let b4 : U8 := ⟨(val.val >>> 32) % 256, by omega⟩
-  let b3 : U8 := ⟨(val.val >>> 24) % 256, by omega⟩
-  let b2 : U8 := ⟨(val.val >>> 16) % 256, by omega⟩
-  let b1 : U8 := ⟨(val.val >>> 8) % 256, by omega⟩
-  let b0 : U8 := ⟨val.val % 256, by omega⟩
+  let b7 : U8 := ⟨(val.val >>> 56) % 256⟩
+  let b6 : U8 := ⟨(val.val >>> 48) % 256⟩
+  let b5 : U8 := ⟨(val.val >>> 40) % 256⟩
+  let b4 : U8 := ⟨(val.val >>> 32) % 256⟩
+  let b3 : U8 := ⟨(val.val >>> 24) % 256⟩
+  let b2 : U8 := ⟨(val.val >>> 16) % 256⟩
+  let b1 : U8 := ⟨(val.val >>> 8) % 256⟩
+  let b0 : U8 := ⟨val.val % 256⟩
   [b7, b6, b5, b4, b3, b2, b1, b0]
 
 /-- Read a big-endian U32 from a byte list. -/
@@ -37,7 +37,7 @@ def read_u32_be (data : List U8) (offset : Nat) : Result (U32 × Nat) :=
     let b2 := data.get ⟨offset + 1, by omega⟩
     let b1 := data.get ⟨offset + 2, by omega⟩
     let b0 := data.get ⟨offset + 3, by omega⟩
-    let val : U32 := ⟨b3.val <<< 24 ||| b2.val <<< 16 ||| b1.val <<< 8 ||| b0.val, by omega⟩
+    let val : U32 := ⟨b3.val <<< 24 ||| b2.val <<< 16 ||| b1.val <<< 8 ||| b0.val⟩
     .ok (val, offset + 4)
   else
     .fail .panic
@@ -54,39 +54,39 @@ def read_u64_be (data : List U8) (offset : Nat) : Result (U64 × Nat) :=
     let b1 := data.get ⟨offset + 6, by omega⟩
     let b0 := data.get ⟨offset + 7, by omega⟩
     let val : U64 := ⟨b7.val <<< 56 ||| b6.val <<< 48 ||| b5.val <<< 40 ||| b4.val <<< 32
-                      ||| b3.val <<< 24 ||| b2.val <<< 16 ||| b1.val <<< 8 ||| b0.val, by omega⟩
+                      ||| b3.val <<< 24 ||| b2.val <<< 16 ||| b1.val <<< 8 ||| b0.val⟩
     .ok (val, offset + 8)
   else
     .fail .panic
 
 /-- Write a length-prefixed byte list. -/
 def serialize_bytes (data : List U8) : List U8 :=
-  write_u32_be ⟨data.length, by sorry⟩ ++ data
+  write_u32_be ⟨data.length⟩ ++ data
 
 /-- Write a list of byte vectors: count then each length-prefixed. -/
 def serialize_vec_list : List (List U8) → List U8
-  | [] => write_u32_be ⟨0, by omega⟩
-  | vecs => write_u32_be ⟨vecs.length, by sorry⟩ ++ vecs.flatMap serialize_bytes
+  | [] => write_u32_be ⟨0⟩
+  | vecs => write_u32_be ⟨vecs.length⟩ ++ vecs.flatMap serialize_bytes
 
 /-- CmdType to tag byte. -/
 def cmd_type_tag : CmdType → U8
-  | .Ping => ⟨0, by omega⟩
-  | .Quit => ⟨1, by omega⟩
-  | .Help => ⟨2, by omega⟩
-  | .Run  => ⟨3, by omega⟩
+  | .Ping => ⟨0⟩
+  | .Quit => ⟨1⟩
+  | .Help => ⟨2⟩
+  | .Run  => ⟨3⟩
 
 /-- ErrorCode to tag byte. -/
 def error_code_tag : ErrorCode → U8
-  | .InvalidInput => ⟨0, by omega⟩
-  | .NotFound     => ⟨1, by omega⟩
-  | .Internal     => ⟨2, by omega⟩
+  | .InvalidInput => ⟨0⟩
+  | .NotFound     => ⟨1⟩
+  | .Internal     => ⟨2⟩
 
 /-- Tag byte for a message variant. -/
 def message_tag : Message → U8
-  | .Text _        => ⟨0, by omega⟩
-  | .Command _ _   => ⟨1, by omega⟩
-  | .Error _ _     => ⟨2, by omega⟩
-  | .Heartbeat _   => ⟨3, by omega⟩
+  | .Text _        => ⟨0⟩
+  | .Command _ _   => ⟨1⟩
+  | .Error _ _     => ⟨2⟩
+  | .Heartbeat _   => ⟨3⟩
 
 /-- Build the payload for a message (everything after the TLV header). -/
 def build_payload : Message → List U8
@@ -98,7 +98,7 @@ def build_payload : Message → List U8
 /-- Serialize a message into TLV wire format: [tag:U8][length:U32 BE][payload]. -/
 def serialize (msg : Message) : List U8 :=
   let payload := build_payload msg
-  [message_tag msg] ++ write_u32_be ⟨payload.length, by sorry⟩ ++ payload
+  [message_tag msg] ++ write_u32_be ⟨payload.length⟩ ++ payload
 
 /-- Read a length-prefixed byte list from data at offset. -/
 def read_bytes (data : List U8) (offset : Nat) : Result (List U8 × Nat) :=

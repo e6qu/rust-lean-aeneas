@@ -10,7 +10,7 @@
 --
 -- 2. The parser's while loops (in parse_expr and parse_term) similarly become
 --    `partial_fixpoint` loops. parse_factor contains a recursive call to
---    parse_expr (for parenthesized sub-expressions), which Aeneas handles
+--    parse_expr (for parenthesized expressions), which Aeneas handles
 --    via mutual recursion or fuel.
 --
 -- 3. The evaluator (eval) is structural recursion on Expr — no loops needed.
@@ -33,14 +33,33 @@ namespace infix_calc
 -- Lexer
 -- ============================================================================
 
+/-- Inner loop for parsing a multi-digit number. -/
+@[rust_loop]
+partial def lex_num_loop
+    (input : Vec U8) (i : Usize) (value : I64)
+    : Result (Usize × I64) := do
+  if h : i < input.len then do
+    let ch ← Vec.index input i
+    if 48 ≤ ch ∧ ch ≤ 57 then do
+      let ch_minus_48 ← ch - (48 : U8)
+      let digit ← I64.ofU8 ch_minus_48
+      let prod ← value * (10 : I64)
+      let value' ← prod + digit
+      let i' ← i + (1 : Usize)
+      lex_num_loop input i' value'
+    else
+      ok (i, value)
+  else
+    ok (i, value)
+
 /-- Inner loop of the lexer. Processes one byte at a time, accumulating tokens.
     The while loop in Rust becomes this partial_fixpoint recursive function. -/
 @[rust_loop]
-partial_fixpoint def lex_loop
+partial def lex_loop
     (input : Vec U8) (i : Usize) (tokens : Vec Token)
     : Result (Vec Token) := do
   if h : i < input.len then do
-    let ch ← input.index ⟨i, h⟩
+    let ch ← Vec.index input i
     if ch = 32 ∨ ch = 9 ∨ ch = 10 ∨ ch = 13 then do
       -- Skip whitespace
       let i' ← i + (1 : Usize)
@@ -77,7 +96,8 @@ partial_fixpoint def lex_loop
       lex_loop input i' tokens'
     else if 48 ≤ ch ∧ ch ≤ 57 then do
       -- Digit: parse multi-digit number
-      let digit ← I64.ofU8 (ch - 48)
+      let ch_minus_48 ← ch - (48 : U8)
+      let digit ← I64.ofU8 ch_minus_48
       let ⟨i', value⟩ ← lex_num_loop input (← i + (1 : Usize)) digit
       let tokens' ← tokens.push (Token.Num value)
       lex_loop input i' tokens'
@@ -85,23 +105,6 @@ partial_fixpoint def lex_loop
       .fail .panic  -- UnexpectedToken
   else
     ok tokens
-
-/-- Inner loop for parsing a multi-digit number. -/
-@[rust_loop]
-partial_fixpoint def lex_num_loop
-    (input : Vec U8) (i : Usize) (value : I64)
-    : Result (Usize × I64) := do
-  if h : i < input.len then do
-    let ch ← input.index ⟨i, h⟩
-    if 48 ≤ ch ∧ ch ≤ 57 then do
-      let digit ← I64.ofU8 (ch - 48)
-      let value' ← value * (10 : I64) + digit
-      let i' ← i + (1 : Usize)
-      lex_num_loop input i' value'
-    else
-      ok (i, value)
-  else
-    ok (i, value)
 
 /-- Top-level lexer function.
     Rust: pub fn lex(input: &[u8]) -> Result<Vec<Token>, ParseError> -/
@@ -113,17 +116,18 @@ def lex (input : Vec U8) : Result (core.result.Result (Vec Token) ParseError) :=
 -- Parser
 -- ============================================================================
 
+mutual
 /-- Parse an atomic expression: number or parenthesized sub-expression.
     Rust: pub fn parse_factor(tokens: &[Token], pos: usize)
               -> Result<(Expr, usize), ParseError>
 
     Note: This calls parse_expr for parenthesized expressions,
     creating mutual recursion that Aeneas resolves. -/
-partial_fixpoint def parse_factor
+partial def parse_factor
     (tokens : Vec Token) (pos : Usize)
     : Result (core.result.Result (Expr × Usize) ParseError) := do
   if h : pos < tokens.len then do
-    let tok ← tokens.index ⟨pos, h⟩
+    let tok ← Vec.index tokens pos
     match tok with
     | Token.Num n => do
         let pos' ← pos + (1 : Usize)
@@ -135,7 +139,7 @@ partial_fixpoint def parse_factor
         | .err e => ok (.err e)
         | .ok (expr, pos2) =>
           if h2 : pos2 < tokens.len then do
-            let tok2 ← tokens.index ⟨pos2, h2⟩
+            let tok2 ← Vec.index tokens pos2
             match tok2 with
             | Token.RParen => do
                 let pos3 ← pos2 + (1 : Usize)
@@ -148,12 +152,11 @@ partial_fixpoint def parse_factor
     ok (.err ParseError.UnexpectedEnd)
 
 /-- Loop body for parse_term: handles * and / operators. -/
-@[rust_loop]
-partial_fixpoint def parse_term_loop
+partial def parse_term_loop
     (tokens : Vec Token) (left : Expr) (pos : Usize)
     : Result (core.result.Result (Expr × Usize) ParseError) := do
   if h : pos < tokens.len then do
-    let tok ← tokens.index ⟨pos, h⟩
+    let tok ← Vec.index tokens pos
     match tok with
     | Token.Operator Op.Mul => do
         let pos1 ← pos + (1 : Usize)
@@ -176,7 +179,7 @@ partial_fixpoint def parse_term_loop
 /-- Parse a multiplicative expression: factor (('*' | '/') factor)*
     Rust: pub fn parse_term(tokens: &[Token], pos: usize)
               -> Result<(Expr, usize), ParseError> -/
-def parse_term
+partial def parse_term
     (tokens : Vec Token) (pos : Usize)
     : Result (core.result.Result (Expr × Usize) ParseError) := do
   let first ← parse_factor tokens pos
@@ -185,12 +188,11 @@ def parse_term
   | .ok (left, pos1) => parse_term_loop tokens left pos1
 
 /-- Loop body for parse_expr: handles + and - operators. -/
-@[rust_loop]
-partial_fixpoint def parse_expr_loop
+partial def parse_expr_loop
     (tokens : Vec Token) (left : Expr) (pos : Usize)
     : Result (core.result.Result (Expr × Usize) ParseError) := do
   if h : pos < tokens.len then do
-    let tok ← tokens.index ⟨pos, h⟩
+    let tok ← Vec.index tokens pos
     match tok with
     | Token.Operator Op.Add => do
         let pos1 ← pos + (1 : Usize)
@@ -213,13 +215,14 @@ partial_fixpoint def parse_expr_loop
 /-- Parse an additive expression: term (('+' | '-') term)*
     Rust: pub fn parse_expr(tokens: &[Token], pos: usize)
               -> Result<(Expr, usize), ParseError> -/
-def parse_expr
+partial def parse_expr
     (tokens : Vec Token) (pos : Usize)
     : Result (core.result.Result (Expr × Usize) ParseError) := do
   let first ← parse_term tokens pos
   match first with
   | .err e => ok (.err e)
   | .ok (left, pos1) => parse_expr_loop tokens left pos1
+end
 
 /-- Top-level parse function. Checks that all tokens are consumed.
     Rust: pub fn parse(tokens: &[Token]) -> Result<Expr, ParseError> -/

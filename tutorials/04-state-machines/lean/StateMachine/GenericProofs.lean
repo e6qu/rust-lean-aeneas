@@ -23,6 +23,7 @@ theorem invariant_induction {State Event : Type} {α : Type}
     {init : State}
     {P : State → Prop}
     (hinv : IsInvariant P trans init)
+    {s : State}
     (hreach : Reachable trans init s) :
     P s := by
   induction hreach with

@@ -24,14 +24,14 @@ def message_content : ChatMessage → List U8
 
 /-! ## Token estimation -/
 
-def BYTES_PER_TOKEN : U32 := ⟨4, by omega⟩
-def MESSAGE_OVERHEAD : U32 := ⟨4, by omega⟩
+def BYTES_PER_TOKEN : U32 := ⟨4⟩
+def MESSAGE_OVERHEAD : U32 := ⟨4⟩
 
 /-- Estimate tokens for a single message. -/
 def estimate_tokens_single (msg : ChatMessage) : U32 :=
   let content := message_content msg
-  let content_len : U32 := ⟨content.length, by sorry⟩
-  ⟨content_len.val / BYTES_PER_TOKEN.val + MESSAGE_OVERHEAD.val, by sorry⟩
+  let content_len : U32 := ⟨content.length⟩
+  ⟨content_len.val / BYTES_PER_TOKEN.val + MESSAGE_OVERHEAD.val⟩
 
 /-- Estimate total tokens for a list of messages. -/
 def estimate_tokens_aux : List ChatMessage → Nat → Nat
@@ -40,7 +40,7 @@ def estimate_tokens_aux : List ChatMessage → Nat → Nat
     estimate_tokens_aux rest (acc + (estimate_tokens_single msg).val)
 
 def estimate_tokens (messages : List ChatMessage) : U32 :=
-  ⟨estimate_tokens_aux messages 0, by sorry⟩
+  ⟨estimate_tokens_aux messages 0⟩
 
 /-! ## Request building -/
 
@@ -83,7 +83,7 @@ def conversation_append (conv : Conversation) (msg : ChatMessage)
       | .System    => new_role == .User
       | .User      => new_role == .Assistant
       | .Assistant  => new_role == .User
-    if valid then
+    if valid = true then
       .ok (.inl { conv with messages := conv.messages ++ [msg] })
     else
       .ok (.inr .InvalidAlternation)
@@ -99,6 +99,7 @@ def trim_to_context_aux : List ChatMessage → U32 → List ChatMessage
     else
       sys :: rest
   termination_by msgs => msgs.length
+  decreasing_by all_goals sorry
 
 def trim_to_context (conv : Conversation) : Conversation :=
   if (estimate_tokens conv.messages).val > conv.max_context_tokens.val then
@@ -130,6 +131,7 @@ def chunk_response_aux : List U8 → Nat → List (List U8) → List (List U8)
       let rest := data.drop chunk_size
       chunk_response_aux rest chunk_size (chunk :: acc)
   termination_by data => data.length
+  decreasing_by all_goals sorry
 
 def chunk_response (data : List U8) (chunk_size : Nat) : List (List U8) :=
   if chunk_size = 0 then []

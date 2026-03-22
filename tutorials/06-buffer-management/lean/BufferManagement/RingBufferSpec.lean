@@ -15,13 +15,13 @@ namespace buffer_management
 /-- A ring buffer is well-formed when its indices are within bounds
     and the data vector has been properly allocated. -/
 def ring_inv (T : Type) (rb : RingBuffer T) : Prop :=
-  rb.capacity > 0 ∧
-  rb.len ≤ rb.capacity ∧
-  rb.head < rb.capacity ∧
-  rb.tail < rb.capacity ∧
-  rb.data.length = rb.capacity ∧
+  rb.capacity.val > 0 ∧
+  rb.len.val ≤ rb.capacity.val ∧
+  rb.head.val < rb.capacity.val ∧
+  rb.tail.val < rb.capacity.val ∧
+  rb.data.val.size = rb.capacity.val ∧
   -- The tail is consistent with head + len (mod capacity)
-  rb.tail = (rb.head + rb.len) % rb.capacity
+  rb.tail.val = (rb.head.val + rb.len.val) % rb.capacity.val
 
 -- =========================================================================
 -- Abstraction function: ring buffer → logical list
@@ -37,7 +37,7 @@ def ring_to_list_aux (T : Type) (data : Vec T) (capacity head remaining : Nat)
   | n + 1 =>
     let idx := head % capacity
     -- We trust that the invariant guarantees idx < data.length
-    if h : idx < data.length then
+    if h : idx < data.val.size then
       data.val[idx] :: ring_to_list_aux T data capacity (head + 1) n hcap
     else
       [] -- unreachable under the invariant

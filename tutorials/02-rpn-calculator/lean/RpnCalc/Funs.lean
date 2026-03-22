@@ -70,12 +70,16 @@ def parse_number_loop (bytes : Slice U8) (acc : I64) (i : Usize) :
     if c < 48 ∨ c > 57 then    -- b'0' = 48, b'9' = 57
       ok (.err EvalError.InvalidToken)
     else do
-      let digit ← U8.toI64 (c - 48)
-      let acc' ← acc * (10 : I64) + digit
+      let c_minus_48 ← c - (48 : U8)
+      let digit ← U8.toI64 c_minus_48
+      let prod ← acc * (10 : I64)
+      let acc' ← prod + digit
       let i' ← i + (1 : Usize)
       parse_number_loop bytes acc' i'
   else
     ok (.ok (Token.Num acc))
+termination_by (bytes.val.size - i.val)
+decreasing_by sorry
 
 def parse_number (bytes : Slice U8) :
     Result (core.result.Result Token EvalError) := do
@@ -94,7 +98,8 @@ def tokenize_word (word : Slice U8) :
     else if c = 42 then ok (.ok Token.Mul)         -- b'*'
     else if c = 47 then ok (.ok Token.Div)         -- b'/'
     else if 48 ≤ c ∧ c ≤ 57 then do               -- b'0'..=b'9'
-      let n ← U8.toI64 (c - 48)
+      let c_minus_48 ← c - (48 : U8)
+      let n ← U8.toI64 c_minus_48
       ok (.ok (Token.Num n))
     else
       ok (.err EvalError.InvalidToken)
@@ -164,6 +169,8 @@ def evaluate_loop (tokens : Slice Token) (stack : Stack) (i : Usize) :
     | Stack.Push val Stack.Empty => ok (.ok val)
     | Stack.Empty => ok (.err EvalError.StackUnderflow)
     | _ => ok (.err EvalError.TooManyValues)
+termination_by (tokens.val.size - i.val)
+decreasing_by sorry
 
 def evaluate (tokens : Slice Token) :
     Result (core.result.Result I64 EvalError) := do

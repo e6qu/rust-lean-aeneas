@@ -32,7 +32,7 @@ def is_binop : Token -> Prop
   | Token.Div => True
   | Token.Num _ => False
 
-instance : Decidable (is_binop t) := by
+instance (t : Token) : Decidable (is_binop t) := by
   cases t <;> simp [is_binop] <;> infer_instance
 
 -- ============================================================================
@@ -68,10 +68,14 @@ def no_div_tokens : List Token -> Prop
   | (Token.Div :: _) => False
   | (_ :: rest) => no_div_tokens rest
 
-instance : Decidable (no_div_tokens ts) := by
-  induction ts with
-  | nil => simp [no_div_tokens]; infer_instance
-  | cons t rest ih =>
-    cases t <;> simp [no_div_tokens] <;> exact ih
+def no_div_tokens_dec : (ts : List Token) → Decidable (no_div_tokens ts)
+  | [] => isTrue trivial
+  | Token.Div :: _ => isFalse not_false
+  | Token.Plus :: rest => no_div_tokens_dec rest
+  | Token.Minus :: rest => no_div_tokens_dec rest
+  | Token.Mul :: rest => no_div_tokens_dec rest
+  | Token.Num _ :: rest => no_div_tokens_dec rest
+
+instance (ts : List Token) : Decidable (no_div_tokens ts) := no_div_tokens_dec ts
 
 end rpn_calc

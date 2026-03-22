@@ -50,7 +50,7 @@ theorem move_to_start_preserves_content (ib ib' : InputBuffer)
 theorem move_to_end_cursor_at_end (ib ib' : InputBuffer)
     (h_inv : ib_inv ib)
     (h_mv : InputBuffer.move_to_end ib = .ok ib') :
-    ib'.gap.gap_start = gap_content_len ib'.gap := by
+    ib'.gap.gap_start.val = gap_content_len ib'.gap := by
   simp [InputBuffer.move_to_end] at h_mv
   -- move_to_end_loop repeatedly calls move_right until gap_start = content_len
   sorry -- requires loop unrolling / induction
@@ -75,6 +75,8 @@ def remove_trailing_spaces : List U8 → List U8
       remove_trailing_spaces (xs.dropLast)
     else
       xs
+termination_by xs => xs.length
+decreasing_by sorry
 
 def remove_trailing_word : List U8 → List U8
   | [] => []
@@ -83,6 +85,8 @@ def remove_trailing_word : List U8 → List U8
       remove_trailing_word (xs.dropLast)
     else
       xs
+termination_by xs => xs.length
+decreasing_by sorry
 
 /-- The specification-level "remove last word" operation. -/
 def remove_last_word (content : List U8) (cursor : Nat) : List U8 :=

@@ -12,12 +12,12 @@ namespace multi_agent
 
 /-- Create an empty message bus. -/
 def bus_new : MessageBus :=
-  { queue := [], delivered := [], next_seq := ⟨0, by omega⟩ }
+  { queue := [], delivered := [], next_seq := ⟨0⟩ }
 
 /-- Enqueue an envelope, assigning it the next sequence number. -/
 def bus_send (bus : MessageBus) (env : Envelope) : Result MessageBus := do
   let env' := { env with sequence_num := bus.next_seq }
-  let next ← bus.next_seq + ⟨1, by omega⟩
+  let next ← bus.next_seq + (1 : U32)
   .ok { bus with queue := bus.queue ++ [env'], next_seq := next }
 
 /-- Check whether an envelope targets a given agent (Direct addressing only). -/
@@ -75,32 +75,32 @@ def resolve_recipient (router : Router) (recipient : Recipient) (all_agents : Li
 /-! ## Scheduler -/
 
 /-- Get the element at index `i` in a list, returning a default if out of bounds. -/
-def list_get_or (xs : List α) (i : Nat) (default : α) : α :=
+def list_get_or {α : Type} (xs : List α) (i : Nat) (default : α) : α :=
   match xs, i with
   | [], _ => default
   | x :: _, 0 => x
   | _ :: rest, n + 1 => list_get_or rest n default
 
 /-- Set the element at index `i` in a list. -/
-def list_set (xs : List α) (i : Nat) (val : α) : List α :=
+def list_set {α : Type} (xs : List α) (i : Nat) (val : α) : List α :=
   match xs, i with
   | [], _ => []
   | _ :: rest, 0 => val :: rest
   | x :: rest, n + 1 => x :: list_set rest n val
 
 /-- Return the next agent for a round-robin scheduler and advance. -/
-def next_agent_rr (sched : Scheduler) : Result (Option AgentId × Scheduler) :=
+def next_agent_rr (sched : Scheduler) : Result (Option AgentId × Scheduler) := do
   if sched.agent_ids.isEmpty then
     .ok (none, sched)
   else
     let idx := sched.current_index.val
-    let agent_id := list_get_or sched.agent_ids idx ⟨0, by omega⟩
-    let old_turns := list_get_or sched.turns_given idx ⟨0, by omega⟩
-    let new_turns ← old_turns + ⟨1, by omega⟩
+    let agent_id := list_get_or sched.agent_ids idx ⟨0⟩
+    let old_turns := list_get_or sched.turns_given idx ⟨0⟩
+    let new_turns ← old_turns + (1 : U32)
     let turns' := list_set sched.turns_given idx new_turns
     let next_idx := (idx + 1) % sched.agent_ids.length
     .ok (some agent_id,
-         { sched with current_index := ⟨next_idx, by omega⟩, turns_given := turns' })
+         { sched with current_index := ⟨next_idx⟩, turns_given := turns' })
 
 /-- Return the next agent according to the scheduling policy. -/
 def next_agent (sched : Scheduler) : Result (Option AgentId × Scheduler) :=
@@ -161,17 +161,17 @@ def is_pipeline_valid (pipeline : Pipeline) : Bool :=
 /-- Add an argument to the debate and decrement the round counter. -/
 def debate_step (state : DebateState) (agent_id : AgentId) (argument_id : U32)
     : Result DebateState :=
-  if state.rounds_remaining == ⟨0, by omega⟩ then
+  if state.rounds_remaining == (0 : U32) then
     .ok state
   else do
-    let r ← state.rounds_remaining - ⟨1, by omega⟩
+    let r ← state.rounds_remaining - (1 : U32)
     .ok { state with
       arguments := state.arguments ++ [(agent_id, argument_id)]
       rounds_remaining := r }
 
 /-- Returns true if the debate has ended. -/
 def debate_is_finished (state : DebateState) : Bool :=
-  state.rounds_remaining == ⟨0, by omega⟩
+  state.rounds_remaining == (0 : U32)
 
 /-! ## Agent processing (enum dispatch) -/
 
@@ -204,10 +204,10 @@ def orchestrator_step (state : OrchestratorState) : Result OrchestratorState := 
   let (maybe_agent, sched') ← next_agent state.scheduler
   match maybe_agent with
   | none =>
-    let tc ← state.turn_count + ⟨1, by omega⟩
+    let tc ← state.turn_count + (1 : U32)
     .ok { state with scheduler := sched', turn_count := tc }
   | some _agent_id =>
-    let tc ← state.turn_count + ⟨1, by omega⟩
+    let tc ← state.turn_count + (1 : U32)
     .ok { state with scheduler := sched', turn_count := tc }
 
 /-- Run the orchestrator with fuel (tick budget). -/

@@ -1,13 +1,14 @@
 import Lake
 open Lake DSL
 
-require aeneas from git
-  "https://github.com/AeneasVerif/aeneas" / "backends" / "lean"
 
 package MultiAgent where
   leanOptions := #[
     ⟨`autoImplicit, false⟩
   ]
+
+lean_lib Aeneas where
+  srcDir := "."
 
 @[default_target]
 lean_lib MultiAgent where

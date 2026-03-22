@@ -1,14 +1,13 @@
 import Lake
 open Lake DSL
 
--- This project depends on the Aeneas Lean library.
-require aeneas from git
-  "https://github.com/AeneasVerif/aeneas" / "backends" / "lean"
-
 package RpnCalc where
   leanOptions := #[
     ⟨`autoImplicit, false⟩
   ]
+
+lean_lib Aeneas where
+  srcDir := "."
 
 @[default_target]
 lean_lib RpnCalc where

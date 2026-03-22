@@ -1,7 +1,7 @@
 //! AppModel: Elm-style pure application model with focus management.
 
 use crate::action::Action;
-use crate::event::{Event, KeyCode, Modifiers};
+use crate::event::{Event, KeyCode};
 use crate::geometry::{Cell, Rect};
 use crate::layout::{SplitDir, split};
 use crate::widget::{WidgetKind, render_widget, scroll_clamp};

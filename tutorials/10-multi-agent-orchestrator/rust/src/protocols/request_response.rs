@@ -21,7 +21,12 @@ pub struct RequestResponse {
 }
 
 /// Create a new request-response protocol instance.
-pub fn rr_new(requester: AgentId, responder: AgentId, request_id: u32, timeout: u32) -> RequestResponse {
+pub fn rr_new(
+    requester: AgentId,
+    responder: AgentId,
+    request_id: u32,
+    timeout: u32,
+) -> RequestResponse {
     RequestResponse {
         requester,
         responder,

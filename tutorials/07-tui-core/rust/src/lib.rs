@@ -10,9 +10,9 @@
 //! All code is written in an Aeneas-friendly style: no closures, no iterators,
 //! no trait objects, explicit while loops, and `Vec<u8>` instead of `String`.
 
-pub mod geometry;
+pub mod action;
+pub mod app_model;
 pub mod event;
+pub mod geometry;
 pub mod layout;
 pub mod widget;
-pub mod app_model;
-pub mod action;

@@ -108,7 +108,10 @@ mod tests {
         };
         assert_eq!(
             decide_next_action(&ctx),
-            Decision::CallTool { tool_name_idx: 42, args_hash: 0 }
+            Decision::CallTool {
+                tool_name_idx: 42,
+                args_hash: 0
+            }
         );
     }
 

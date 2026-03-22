@@ -16,9 +16,7 @@ pub struct Pipeline {
 
 /// Create a new empty pipeline.
 pub fn pipeline_new() -> Pipeline {
-    Pipeline {
-        stages: Vec::new(),
-    }
+    Pipeline { stages: Vec::new() }
 }
 
 /// Add a stage to the pipeline.

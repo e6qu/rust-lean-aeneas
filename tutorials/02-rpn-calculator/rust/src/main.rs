@@ -4,7 +4,7 @@
 // printing results) and calls into the verified pure core in lib.rs.
 // Aeneas only translates the library; this file is not part of the proof.
 
-use rpn_calc::{evaluate, tokenize_word, EvalError};
+use rpn_calc::{EvalError, evaluate, tokenize_word};
 
 fn main() {
     let mut input = String::new();
@@ -16,7 +16,7 @@ fn main() {
     }
 
     let mut tokens = Vec::new();
-    for word in input.trim().split_whitespace() {
+    for word in input.split_whitespace() {
         match tokenize_word(word.as_bytes()) {
             Ok(token) => tokens.push(token),
             Err(EvalError::InvalidToken) => {

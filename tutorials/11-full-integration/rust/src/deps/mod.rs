@@ -40,7 +40,7 @@ pub struct Rect {
 /// A single chat message (role + content).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ChatMessage {
-    pub role: u32,     // 0 = user, 1 = assistant, 2 = system
+    pub role: u32, // 0 = user, 1 = assistant, 2 = system
     pub content_id: u32,
 }
 

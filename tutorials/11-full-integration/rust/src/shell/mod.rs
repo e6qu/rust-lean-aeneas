@@ -9,10 +9,10 @@
 // but do not perform actual I/O (since crossterm and ureq are not workspace
 // dependencies).
 
-pub mod terminal_io;
-pub mod http_client;
-pub mod event_loop;
 pub mod adapters;
+pub mod event_loop;
+pub mod http_client;
+pub mod terminal_io;
 
 // `main.rs` lives in this directory but is not a module — it would be the
 // binary entry point if this crate were built with `cargo run`.

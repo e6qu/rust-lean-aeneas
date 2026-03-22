@@ -1,6 +1,6 @@
 pub mod coordinator;
-pub mod specialist;
 pub mod critic;
+pub mod specialist;
 
 use crate::agent_trait::{AgentInstance, AgentKind, AgentState};
 

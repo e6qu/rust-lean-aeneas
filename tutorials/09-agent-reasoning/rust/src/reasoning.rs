@@ -57,10 +57,10 @@ pub fn is_chain_well_formed(chain: &[Step]) -> bool {
 ///
 /// Returns `true` if the step was appended, `false` if it was rejected.
 pub fn append_step(chain: &mut Vec<Step>, step: Step) -> bool {
-    if let Some(last) = chain.last() {
-        if chain_step_order(&step) < chain_step_order(last) {
-            return false;
-        }
+    if let Some(last) = chain.last()
+        && chain_step_order(&step) < chain_step_order(last)
+    {
+        return false;
     }
     chain.push(step);
     true
@@ -108,7 +108,7 @@ mod tests {
     fn test_non_monotonic_chain_rejected() {
         let chain = vec![
             Step::Think(1),
-            Step::Observe(2),  // goes backwards
+            Step::Observe(2), // goes backwards
         ];
         assert!(!is_chain_well_formed(&chain));
     }
@@ -146,7 +146,10 @@ mod tests {
     fn test_append_preserves_well_formedness() {
         let mut chain = vec![Step::Observe(0), Step::Think(1)];
         assert!(is_chain_well_formed(&chain));
-        assert!(append_step(&mut chain, Step::Decide(Decision::AskClarification)));
+        assert!(append_step(
+            &mut chain,
+            Step::Decide(Decision::AskClarification)
+        ));
         assert!(is_chain_well_formed(&chain));
         assert!(append_step(&mut chain, Step::Act(5)));
         assert!(is_chain_well_formed(&chain));

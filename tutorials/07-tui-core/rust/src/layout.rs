@@ -63,7 +63,11 @@ pub fn split(area: Rect, dir: SplitDir, count: usize) -> Vec<Rect> {
 pub fn split_at(area: Rect, dir: SplitDir, offset: u16) -> (Rect, Rect) {
     match dir {
         SplitDir::Horizontal => {
-            let clamped = if offset > area.width { area.width } else { offset };
+            let clamped = if offset > area.width {
+                area.width
+            } else {
+                offset
+            };
             let left = Rect {
                 x: area.x,
                 y: area.y,
@@ -79,7 +83,11 @@ pub fn split_at(area: Rect, dir: SplitDir, offset: u16) -> (Rect, Rect) {
             (left, right)
         }
         SplitDir::Vertical => {
-            let clamped = if offset > area.height { area.height } else { offset };
+            let clamped = if offset > area.height {
+                area.height
+            } else {
+                offset
+            };
             let top = Rect {
                 x: area.x,
                 y: area.y,

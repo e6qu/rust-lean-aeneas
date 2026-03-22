@@ -87,7 +87,11 @@ fn insert_char_into_textbox() {
     model.update(Event::Key(KeyCode::Char(b'b'), Modifiers::none()));
     model.update(Event::Key(KeyCode::Char(b'c'), Modifiers::none()));
 
-    if let tui_core::widget::WidgetKind::TextBox { ref content, cursor } = model.widgets[0] {
+    if let tui_core::widget::WidgetKind::TextBox {
+        ref content,
+        cursor,
+    } = model.widgets[0]
+    {
         assert_eq!(content, &b"abc".to_vec());
         assert_eq!(cursor, 3);
     } else {
@@ -102,7 +106,11 @@ fn delete_char_from_textbox() {
     model.update(Event::Key(KeyCode::Char(b'b'), Modifiers::none()));
     model.update(Event::Key(KeyCode::Backspace, Modifiers::none()));
 
-    if let tui_core::widget::WidgetKind::TextBox { ref content, cursor } = model.widgets[0] {
+    if let tui_core::widget::WidgetKind::TextBox {
+        ref content,
+        cursor,
+    } = model.widgets[0]
+    {
         assert_eq!(content, &b"a".to_vec());
         assert_eq!(cursor, 1);
     } else {
@@ -146,7 +154,9 @@ fn ctrl_c_returns_quit() {
     let mut model = AppModel::new(80, 24);
     let action = model.update(Event::Key(
         KeyCode::Char(b'c'),
-        Modifiers { bits: Modifiers::CTRL },
+        Modifiers {
+            bits: Modifiers::CTRL,
+        },
     ));
     assert_eq!(action, Action::Quit);
 }

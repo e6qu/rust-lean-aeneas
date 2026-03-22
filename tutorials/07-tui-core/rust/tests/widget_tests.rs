@@ -1,6 +1,6 @@
 //! Tests for widget rendering.
 
-use tui_core::geometry::{Rect, Position};
+use tui_core::geometry::{Position, Rect};
 use tui_core::layout::SplitDir;
 use tui_core::widget::{WidgetKind, render_widget, scroll_clamp};
 

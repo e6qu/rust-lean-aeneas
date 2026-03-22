@@ -49,7 +49,8 @@ pub fn next_agent(sched: &mut Scheduler) -> Option<AgentId> {
             let idx = sched.current_index as usize;
             let agent_id = sched.agent_ids[idx];
             sched.turns_given[idx] += 1;
-            sched.current_index = ((sched.current_index + 1) as usize % sched.agent_ids.len()) as u32;
+            sched.current_index =
+                ((sched.current_index + 1) as usize % sched.agent_ids.len()) as u32;
             Some(agent_id)
         }
         SchedulerKind::Priority => {

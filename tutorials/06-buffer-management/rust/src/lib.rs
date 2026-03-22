@@ -10,6 +10,6 @@
 //! no trait objects, explicit while loops, and return types that avoid Option/Result
 //! where they would complicate the Lean translation.
 
-pub mod ring_buffer;
 pub mod gap_buffer;
 pub mod input_buffer;
+pub mod ring_buffer;

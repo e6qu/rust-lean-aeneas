@@ -90,8 +90,7 @@ fn handle_submit(state: &AppState) -> AppState {
     new_state.next_timestamp += 1;
 
     // Build a message-bus triple: user -> coordinator (agent 0).
-    let (sender, recipient, cid) =
-        message_bridge::user_input_to_message(content_id, 0);
+    let (sender, recipient, cid) = message_bridge::user_input_to_message(content_id, 0);
     new_state.message_queue.push((sender, recipient, cid));
 
     // Clear the input buffer.

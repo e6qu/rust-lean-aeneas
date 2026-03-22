@@ -7,5 +7,5 @@
 // The `deps` module re-exports stub types representing prior tutorials (05-10).
 
 pub mod deps;
-pub mod verified_core;
 pub mod shell;
+pub mod verified_core;

@@ -111,16 +111,26 @@ mod tests {
                 name_id: 1,
                 description_id: 100,
                 params: vec![
-                    ToolParam { name_id: 10, kind: ParamKind::StringParam, required: true },
-                    ToolParam { name_id: 11, kind: ParamKind::IntParam, required: false },
+                    ToolParam {
+                        name_id: 10,
+                        kind: ParamKind::StringParam,
+                        required: true,
+                    },
+                    ToolParam {
+                        name_id: 11,
+                        kind: ParamKind::IntParam,
+                        required: false,
+                    },
                 ],
             },
             ToolSpec {
                 name_id: 2,
                 description_id: 200,
-                params: vec![
-                    ToolParam { name_id: 20, kind: ParamKind::BoolParam, required: true },
-                ],
+                params: vec![ToolParam {
+                    name_id: 20,
+                    kind: ParamKind::BoolParam,
+                    required: true,
+                }],
             },
         ]
     }
@@ -156,10 +166,7 @@ mod tests {
     fn test_validate_with_optional() {
         let reg = sample_registry();
         let args = ToolCallArgs {
-            param_values: vec![
-                (10, ParamKind::StringParam),
-                (11, ParamKind::IntParam),
-            ],
+            param_values: vec![(10, ParamKind::StringParam), (11, ParamKind::IntParam)],
         };
         assert!(validate_tool_call(&reg[0], &args));
     }
@@ -177,7 +184,7 @@ mod tests {
     fn test_validate_wrong_kind() {
         let reg = sample_registry();
         let args = ToolCallArgs {
-            param_values: vec![(10, ParamKind::IntParam)],  // should be StringParam
+            param_values: vec![(10, ParamKind::IntParam)], // should be StringParam
         };
         assert!(!validate_tool_call(&reg[0], &args));
     }
@@ -188,7 +195,7 @@ mod tests {
         let args = ToolCallArgs {
             param_values: vec![
                 (10, ParamKind::StringParam),
-                (99, ParamKind::BoolParam),  // not in spec
+                (99, ParamKind::BoolParam), // not in spec
             ],
         };
         assert!(!validate_tool_call(&reg[0], &args));
@@ -199,11 +206,15 @@ mod tests {
         let spec = ToolSpec {
             name_id: 3,
             description_id: 300,
-            params: vec![
-                ToolParam { name_id: 30, kind: ParamKind::StringParam, required: false },
-            ],
+            params: vec![ToolParam {
+                name_id: 30,
+                kind: ParamKind::StringParam,
+                required: false,
+            }],
         };
-        let args = ToolCallArgs { param_values: vec![] };
+        let args = ToolCallArgs {
+            param_values: vec![],
+        };
         assert!(validate_tool_call(&spec, &args));
     }
 }

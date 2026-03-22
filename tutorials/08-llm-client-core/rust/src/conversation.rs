@@ -22,8 +22,7 @@ pub enum ConvError {
 impl Conversation {
     /// Create a new conversation with the given system prompt and token budget.
     pub fn new(system_msg: Vec<u8>, max_context: u32) -> Self {
-        let mut messages: Vec<ChatMessage> = Vec::new();
-        messages.push(ChatMessage::RoleMessage(Role::System, system_msg));
+        let messages: Vec<ChatMessage> = vec![ChatMessage::RoleMessage(Role::System, system_msg)];
         Conversation {
             messages,
             max_context_tokens: max_context,
@@ -78,9 +77,7 @@ impl Conversation {
     ///
     /// Uses a while loop for Aeneas compatibility.
     pub fn trim_to_context(&mut self) {
-        while self.messages.len() > 1
-            && estimate_tokens(&self.messages) > self.max_context_tokens
-        {
+        while self.messages.len() > 1 && estimate_tokens(&self.messages) > self.max_context_tokens {
             self.messages.remove(1);
         }
     }

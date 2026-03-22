@@ -1,8 +1,8 @@
 use crate::agent_trait::{AgentId, AgentInstance, AgentState, Envelope, Recipient};
 use crate::agents::{agent_process, is_agent_active};
-use crate::message_bus::{bus_is_empty, bus_send, bus_deliver};
-use crate::router::{resolve_recipient, Router};
-use crate::scheduler::{next_agent, Scheduler, SchedulerKind};
+use crate::message_bus::{bus_deliver, bus_is_empty, bus_send};
+use crate::router::{Router, resolve_recipient};
+use crate::scheduler::{Scheduler, SchedulerKind, next_agent};
 
 /// Configuration limits for the orchestrator.
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -23,6 +23,7 @@ pub struct OrchestratorState {
 }
 
 /// Find an agent by ID and return its index.
+#[allow(clippy::needless_range_loop, clippy::manual_find)]
 fn find_agent_index(agents: &[AgentInstance], agent_id: AgentId) -> Option<usize> {
     for i in 0..agents.len() {
         if agents[i].id == agent_id {
@@ -235,7 +236,7 @@ mod tests {
         orchestrator_run(&mut state);
         assert!(state.turn_count <= 20);
         // Check that the bus processed messages
-        assert!(state.bus.delivered.len() > 0);
+        assert!(!state.bus.delivered.is_empty());
     }
 
     #[test]

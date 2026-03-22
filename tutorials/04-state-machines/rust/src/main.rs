@@ -14,7 +14,10 @@ fn main() {
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines();
 
-    let choice = lines.next().unwrap_or(Ok(String::new())).unwrap_or_default();
+    let choice = lines
+        .next()
+        .unwrap_or(Ok(String::new()))
+        .unwrap_or_default();
 
     match choice.trim() {
         "1" => run_door(&mut lines),
@@ -42,7 +45,10 @@ fn run_door(lines: &mut impl Iterator<Item = io::Result<String>>) {
             "handle" => DoorEvent::TurnHandle,
             "reset" => DoorEvent::Reset,
             "quit" => break,
-            _ => { println!("  Unknown command."); continue; }
+            _ => {
+                println!("  Unknown command.");
+                continue;
+            }
         };
         let (next, actions) = DoorLock::transition(&state, &event);
         println!("  Actions: {:?}", actions);

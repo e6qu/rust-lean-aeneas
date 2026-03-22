@@ -136,19 +136,11 @@ impl StateMachine for DoorLock {
                     }
                 }
             }
-            DoorEvent::TurnHandle => {
-                match state.door {
-                    DoorState::Unlocked => {
-                        (state.clone(), vec![DoorAction::OpenDoor])
-                    }
-                    DoorState::Locked => {
-                        (state.clone(), vec![DoorAction::Beep])
-                    }
-                    DoorState::Alarmed => {
-                        (state.clone(), vec![DoorAction::SoundAlarm])
-                    }
-                }
-            }
+            DoorEvent::TurnHandle => match state.door {
+                DoorState::Unlocked => (state.clone(), vec![DoorAction::OpenDoor]),
+                DoorState::Locked => (state.clone(), vec![DoorAction::Beep]),
+                DoorState::Alarmed => (state.clone(), vec![DoorAction::SoundAlarm]),
+            },
             DoorEvent::Reset => {
                 let new_state = DoorLockState {
                     door: DoorState::Locked,
@@ -229,39 +221,55 @@ impl StateMachine for TrafficLight {
                     ns_light: LightColor::Yellow,
                     ew_light: LightColor::Red,
                 };
-                (new_state, vec![TrafficAction::ChangeLight(Direction::NorthSouth, LightColor::Yellow)])
+                (
+                    new_state,
+                    vec![TrafficAction::ChangeLight(
+                        Direction::NorthSouth,
+                        LightColor::Yellow,
+                    )],
+                )
             }
             (LightColor::Yellow, LightColor::Red) => {
                 let new_state = TrafficState {
                     ns_light: LightColor::Red,
                     ew_light: LightColor::Green,
                 };
-                (new_state, vec![
-                    TrafficAction::ChangeLight(Direction::NorthSouth, LightColor::Red),
-                    TrafficAction::ChangeLight(Direction::EastWest, LightColor::Green),
-                ])
+                (
+                    new_state,
+                    vec![
+                        TrafficAction::ChangeLight(Direction::NorthSouth, LightColor::Red),
+                        TrafficAction::ChangeLight(Direction::EastWest, LightColor::Green),
+                    ],
+                )
             }
             (LightColor::Red, LightColor::Green) => {
                 let new_state = TrafficState {
                     ns_light: LightColor::Red,
                     ew_light: LightColor::Yellow,
                 };
-                (new_state, vec![TrafficAction::ChangeLight(Direction::EastWest, LightColor::Yellow)])
+                (
+                    new_state,
+                    vec![TrafficAction::ChangeLight(
+                        Direction::EastWest,
+                        LightColor::Yellow,
+                    )],
+                )
             }
             (LightColor::Red, LightColor::Yellow) => {
                 let new_state = TrafficState {
                     ns_light: LightColor::Green,
                     ew_light: LightColor::Red,
                 };
-                (new_state, vec![
-                    TrafficAction::ChangeLight(Direction::NorthSouth, LightColor::Green),
-                    TrafficAction::ChangeLight(Direction::EastWest, LightColor::Red),
-                ])
+                (
+                    new_state,
+                    vec![
+                        TrafficAction::ChangeLight(Direction::NorthSouth, LightColor::Green),
+                        TrafficAction::ChangeLight(Direction::EastWest, LightColor::Red),
+                    ],
+                )
             }
             // Any other combination: no change (shouldn't happen in normal operation)
-            _ => {
-                (state.clone(), vec![])
-            }
+            _ => (state.clone(), vec![]),
         }
     }
 }
@@ -359,17 +367,20 @@ mod tests {
     #[test]
     fn test_run_machine_door_sequence() {
         let events = vec![
-            DoorEvent::EnterCode(9999),   // wrong #1
+            DoorEvent::EnterCode(9999),         // wrong #1
             DoorEvent::EnterCode(CORRECT_CODE), // correct → unlock
-            DoorEvent::TurnHandle,         // open door
+            DoorEvent::TurnHandle,              // open door
         ];
         let (state, actions) = run_machine::<DoorLock>(&door_initial(), &events);
         assert_eq!(state.door, DoorState::Unlocked);
-        assert_eq!(actions, vec![
-            DoorAction::Beep,     // wrong code beep
-            DoorAction::Beep,     // correct code beep
-            DoorAction::OpenDoor, // handle turn
-        ]);
+        assert_eq!(
+            actions,
+            vec![
+                DoorAction::Beep,     // wrong code beep
+                DoorAction::Beep,     // correct code beep
+                DoorAction::OpenDoor, // handle turn
+            ]
+        );
     }
 
     // -- Traffic Light tests --

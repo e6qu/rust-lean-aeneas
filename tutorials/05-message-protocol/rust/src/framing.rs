@@ -13,9 +13,7 @@ pub struct FrameAccumulator {
 impl FrameAccumulator {
     /// Create a new, empty accumulator.
     pub fn new() -> Self {
-        FrameAccumulator {
-            buffer: Vec::new(),
-        }
+        FrameAccumulator { buffer: Vec::new() }
     }
 
     /// Append `data` to the internal buffer and attempt to extract complete

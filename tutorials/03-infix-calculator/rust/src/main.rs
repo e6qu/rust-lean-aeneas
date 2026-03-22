@@ -11,7 +11,11 @@ fn main() {
     let stdout = io::stdout();
     let mut stdout = stdout.lock();
 
-    write!(stdout, "Infix Calculator (type an expression, e.g. '(2 + 3) * 4')\n").unwrap();
+    writeln!(
+        stdout,
+        "Infix Calculator (type an expression, e.g. '(2 + 3) * 4')"
+    )
+    .unwrap();
     write!(stdout, "Press Ctrl-D to exit.\n\n").unwrap();
 
     for line in stdin.lock().lines() {

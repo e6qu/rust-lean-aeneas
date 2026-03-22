@@ -55,33 +55,29 @@ impl AppModel {
         // 2: StatusBar
         // 3: Border around TextBox (child_index = 0)
         // 4: Container (root) [3, 1, 2] vertical
-        let mut widgets: Vec<WidgetKind> = Vec::new();
-
-        widgets.push(WidgetKind::TextBox {
-            content: Vec::new(),
-            cursor: 0,
-        });
-
-        widgets.push(WidgetKind::ScrollableList {
-            items: Vec::new(),
-            selected: 0,
-            scroll_offset: 0,
-        });
-
-        widgets.push(WidgetKind::StatusBar {
-            left_text: b"Ready".to_vec(),
-            right_text: b"07-tui-core".to_vec(),
-        });
-
-        widgets.push(WidgetKind::Border {
-            title: b"Input".to_vec(),
-            child_index: 0,
-        });
-
-        widgets.push(WidgetKind::Container {
-            dir: SplitDir::Vertical,
-            children: vec![3, 1, 2],
-        });
+        let widgets: Vec<WidgetKind> = vec![
+            WidgetKind::TextBox {
+                content: Vec::new(),
+                cursor: 0,
+            },
+            WidgetKind::ScrollableList {
+                items: Vec::new(),
+                selected: 0,
+                scroll_offset: 0,
+            },
+            WidgetKind::StatusBar {
+                left_text: b"Ready".to_vec(),
+                right_text: b"07-tui-core".to_vec(),
+            },
+            WidgetKind::Border {
+                title: b"Input".to_vec(),
+                child_index: 0,
+            },
+            WidgetKind::Container {
+                dir: SplitDir::Vertical,
+                children: vec![3, 1, 2],
+            },
+        ];
 
         let mut model = AppModel {
             widgets,
@@ -156,137 +152,137 @@ impl AppModel {
             Action::InsertChar(c) => {
                 let c = *c;
                 let fi = self.focus_index;
-                if fi < self.widgets.len() {
-                    if let WidgetKind::TextBox { ref mut content, ref mut cursor } =
-                        self.widgets[fi]
-                    {
-                        if *cursor > content.len() {
-                            *cursor = content.len();
-                        }
-                        content.insert(*cursor, c);
-                        *cursor += 1;
+                if fi < self.widgets.len()
+                    && let WidgetKind::TextBox {
+                        ref mut content,
+                        ref mut cursor,
+                    } = self.widgets[fi]
+                {
+                    if *cursor > content.len() {
+                        *cursor = content.len();
                     }
+                    content.insert(*cursor, c);
+                    *cursor += 1;
                 }
             }
             Action::DeleteChar => {
                 let fi = self.focus_index;
-                if fi < self.widgets.len() {
-                    if let WidgetKind::TextBox { ref mut content, ref mut cursor } =
-                        self.widgets[fi]
-                    {
-                        if *cursor > 0 && !content.is_empty() {
-                            *cursor -= 1;
-                            content.remove(*cursor);
-                        }
-                    }
+                if fi < self.widgets.len()
+                    && let WidgetKind::TextBox {
+                        ref mut content,
+                        ref mut cursor,
+                    } = self.widgets[fi]
+                    && *cursor > 0
+                    && !content.is_empty()
+                {
+                    *cursor -= 1;
+                    content.remove(*cursor);
                 }
             }
             Action::MoveCursor(delta) => {
                 let delta = *delta;
                 let fi = self.focus_index;
-                if fi < self.widgets.len() {
-                    if let WidgetKind::TextBox { ref content, ref mut cursor } =
-                        self.widgets[fi]
-                    {
-                        if delta < 0 {
-                            let abs_delta = (-delta) as usize;
-                            if *cursor >= abs_delta {
-                                *cursor -= abs_delta;
-                            } else {
-                                *cursor = 0;
-                            }
+                if fi < self.widgets.len()
+                    && let WidgetKind::TextBox {
+                        ref content,
+                        ref mut cursor,
+                    } = self.widgets[fi]
+                {
+                    if delta < 0 {
+                        let abs_delta = (-delta) as usize;
+                        if *cursor >= abs_delta {
+                            *cursor -= abs_delta;
                         } else {
-                            *cursor += delta as usize;
-                            if *cursor > content.len() {
-                                *cursor = content.len();
-                            }
+                            *cursor = 0;
+                        }
+                    } else {
+                        *cursor += delta as usize;
+                        if *cursor > content.len() {
+                            *cursor = content.len();
                         }
                     }
                 }
             }
             Action::ScrollUp => {
                 let fi = self.focus_index;
-                if fi < self.widgets.len() {
-                    if let WidgetKind::ScrollableList {
+                if fi < self.widgets.len()
+                    && let WidgetKind::ScrollableList {
                         ref mut selected,
                         ref items,
                         ref mut scroll_offset,
                     } = self.widgets[fi]
-                    {
-                        if *selected > 0 {
-                            *selected -= 1;
-                        }
-                        let visible = if fi < self.areas.len() {
-                            self.areas[fi].height as usize
-                        } else {
-                            1
-                        };
-                        if *selected < *scroll_offset {
-                            *scroll_offset = *selected;
-                        }
-                        *scroll_offset = scroll_clamp(*scroll_offset, items.len(), visible);
+                {
+                    if *selected > 0 {
+                        *selected -= 1;
                     }
+                    let visible = if fi < self.areas.len() {
+                        self.areas[fi].height as usize
+                    } else {
+                        1
+                    };
+                    if *selected < *scroll_offset {
+                        *scroll_offset = *selected;
+                    }
+                    *scroll_offset = scroll_clamp(*scroll_offset, items.len(), visible);
                 }
             }
             Action::ScrollDown => {
                 let fi = self.focus_index;
-                if fi < self.widgets.len() {
-                    if let WidgetKind::ScrollableList {
+                if fi < self.widgets.len()
+                    && let WidgetKind::ScrollableList {
                         ref mut selected,
                         ref items,
                         ref mut scroll_offset,
                     } = self.widgets[fi]
-                    {
-                        if *selected + 1 < items.len() {
-                            *selected += 1;
-                        }
-                        let visible = if fi < self.areas.len() {
-                            self.areas[fi].height as usize
-                        } else {
-                            1
-                        };
-                        if *selected >= *scroll_offset + visible {
-                            *scroll_offset = *selected - visible + 1;
-                        }
-                        *scroll_offset = scroll_clamp(*scroll_offset, items.len(), visible);
+                {
+                    if *selected + 1 < items.len() {
+                        *selected += 1;
                     }
+                    let visible = if fi < self.areas.len() {
+                        self.areas[fi].height as usize
+                    } else {
+                        1
+                    };
+                    if *selected >= *scroll_offset + visible {
+                        *scroll_offset = *selected - visible + 1;
+                    }
+                    *scroll_offset = scroll_clamp(*scroll_offset, items.len(), visible);
                 }
             }
             Action::Submit => {
                 // Extract text from focused TextBox and add to list widget
                 let fi = self.focus_index;
-                if fi < self.widgets.len() {
-                    if let WidgetKind::TextBox { ref content, .. } = self.widgets[fi] {
-                        let text = content.clone();
-                        if !text.is_empty() {
-                            // Find the first ScrollableList and add to it
-                            let mut si: usize = 0;
-                            while si < self.widgets.len() {
-                                if let WidgetKind::ScrollableList { .. } = self.widgets[si] {
-                                    break;
-                                }
-                                si += 1;
+                if fi < self.widgets.len()
+                    && let WidgetKind::TextBox { ref content, .. } = self.widgets[fi]
+                {
+                    let text = content.clone();
+                    if !text.is_empty() {
+                        // Find the first ScrollableList and add to it
+                        let mut si: usize = 0;
+                        while si < self.widgets.len() {
+                            if let WidgetKind::ScrollableList { .. } = self.widgets[si] {
+                                break;
                             }
-                            if si < self.widgets.len() {
-                                if let WidgetKind::ScrollableList {
-                                    ref mut items,
-                                    ref mut selected,
-                                    ..
-                                } = self.widgets[si]
-                                {
-                                    items.push(text);
-                                    *selected = items.len() - 1;
-                                }
-                            }
-                            // Clear the textbox
-                            if let WidgetKind::TextBox {
-                                ref mut content,
-                                ref mut cursor,
-                            } = self.widgets[fi]
-                            {
-                                content.clear();
-                                *cursor = 0;
-                            }
+                            si += 1;
+                        }
+                        if si < self.widgets.len()
+                            && let WidgetKind::ScrollableList {
+                                ref mut items,
+                                ref mut selected,
+                                ..
+                            } = self.widgets[si]
+                        {
+                            items.push(text);
+                            *selected = items.len() - 1;
+                        }
+                        // Clear the textbox
+                        if let WidgetKind::TextBox {
+                            ref mut content,
+                            ref mut cursor,
+                        } = self.widgets[fi]
+                        {
+                            content.clear();
+                            *cursor = 0;
                         }
                     }
                 }
@@ -355,9 +351,8 @@ impl AppModel {
 
 /// Check if a widget kind is focusable.
 fn is_focusable(kind: &WidgetKind) -> bool {
-    match kind {
-        WidgetKind::TextBox { .. } => true,
-        WidgetKind::ScrollableList { .. } => true,
-        _ => false,
-    }
+    matches!(
+        kind,
+        WidgetKind::TextBox { .. } | WidgetKind::ScrollableList { .. }
+    )
 }

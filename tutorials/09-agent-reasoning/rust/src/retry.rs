@@ -87,7 +87,7 @@ mod tests {
     #[test]
     fn test_delay_capped() {
         let s = initial_retry_state(10, 500, 1000);
-        let s2 = next_retry(&s).unwrap();  // 1000
+        let s2 = next_retry(&s).unwrap(); // 1000
         assert_eq!(s2.delay_ms, 1000);
         let s3 = next_retry(&s2).unwrap(); // still 1000 (capped)
         assert_eq!(s3.delay_ms, 1000);
@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn test_retry_stops_at_max() {
         let s = initial_retry_state(2, 100, 10000);
-        let s2 = next_retry(&s).unwrap();  // attempt 1
+        let s2 = next_retry(&s).unwrap(); // attempt 1
         let s3 = next_retry(&s2).unwrap(); // attempt 2
         assert!(!should_retry(&s3));
         assert_eq!(next_retry(&s3), None);

@@ -121,25 +121,26 @@ fn render_conversation(
         if row >= oy + h {
             break;
         }
-        cells.push(ViewCell { x: ox, y: row, ch: tag });
+        cells.push(ViewCell {
+            x: ox,
+            y: row,
+            ch: tag,
+        });
         // Agent id digit (simplified: single digit).
         cells.push(ViewCell {
             x: ox + 1,
             y: row,
             ch: b'0' + (entry.agent_id % 10) as u8,
         });
-        cells.push(ViewCell { x: ox + 2, y: row, ch: b':' });
+        cells.push(ViewCell {
+            x: ox + 2,
+            y: row,
+            ch: b':',
+        });
     }
 }
 
-fn render_input(
-    state: &AppState,
-    cells: &mut Vec<ViewCell>,
-    ox: u16,
-    oy: u16,
-    w: u16,
-    _h: u16,
-) {
+fn render_input(state: &AppState, cells: &mut Vec<ViewCell>, ox: u16, oy: u16, w: u16, _h: u16) {
     let label = if state.active_pane == PaneId::ChatInput {
         b"[Input]*" as &[u8]
     } else {
@@ -181,8 +182,16 @@ fn render_agent_status(
         if row >= oy + h {
             break;
         }
-        let marker = if i == state.selected_agent { b'>' } else { b' ' };
-        cells.push(ViewCell { x: ox, y: row, ch: marker });
+        let marker = if i == state.selected_agent {
+            b'>'
+        } else {
+            b' '
+        };
+        cells.push(ViewCell {
+            x: ox,
+            y: row,
+            ch: marker,
+        });
         cells.push(ViewCell {
             x: ox + 1,
             y: row,
@@ -191,14 +200,7 @@ fn render_agent_status(
     }
 }
 
-fn render_debug(
-    state: &AppState,
-    cells: &mut Vec<ViewCell>,
-    ox: u16,
-    oy: u16,
-    w: u16,
-    _h: u16,
-) {
+fn render_debug(state: &AppState, cells: &mut Vec<ViewCell>, ox: u16, oy: u16, w: u16, _h: u16) {
     if !state.debug_visible {
         write_label(cells, ox, oy, b"[Debug: hidden]", w);
         return;
@@ -240,7 +242,11 @@ mod tests {
         let mut s = AppState::new(1, 5);
         s.input_buffer = vec![b'A', b'B'];
         let v = app_view(&s, 80, 24);
-        let ab_cells: Vec<_> = v.cells.iter().filter(|c| c.ch == b'A' || c.ch == b'B').collect();
+        let ab_cells: Vec<_> = v
+            .cells
+            .iter()
+            .filter(|c| c.ch == b'A' || c.ch == b'B')
+            .collect();
         assert!(ab_cells.len() >= 2);
     }
 

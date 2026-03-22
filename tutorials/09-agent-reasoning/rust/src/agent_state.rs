@@ -44,7 +44,10 @@ pub enum AgentAction {
 /// Returns `Some((next_phase, action))` for valid transitions, `None` otherwise.
 /// Terminal states (`Done`, `Error`) reject all events except that `Cancel` and
 /// `Timeout` from any non-terminal state transition to `Error`.
-pub fn agent_transition(phase: AgentPhase, event: &AgentEvent) -> Option<(AgentPhase, AgentAction)> {
+pub fn agent_transition(
+    phase: AgentPhase,
+    event: &AgentEvent,
+) -> Option<(AgentPhase, AgentAction)> {
     match (phase, event) {
         // --- happy path ---
         (AgentPhase::Idle, AgentEvent::UserMessage) => {
@@ -126,9 +129,14 @@ mod tests {
     #[test]
     fn test_done_rejects_all() {
         let events = [
-            AgentEvent::UserMessage, AgentEvent::LlmResponse, AgentEvent::ToolCallNeeded,
-            AgentEvent::ToolResult, AgentEvent::Timeout, AgentEvent::Cancel,
-            AgentEvent::ComposeDone, AgentEvent::ThinkingDone,
+            AgentEvent::UserMessage,
+            AgentEvent::LlmResponse,
+            AgentEvent::ToolCallNeeded,
+            AgentEvent::ToolResult,
+            AgentEvent::Timeout,
+            AgentEvent::Cancel,
+            AgentEvent::ComposeDone,
+            AgentEvent::ThinkingDone,
         ];
         for ev in &events {
             assert_eq!(agent_transition(AgentPhase::Done, ev), None);
@@ -138,9 +146,14 @@ mod tests {
     #[test]
     fn test_error_rejects_all() {
         let events = [
-            AgentEvent::UserMessage, AgentEvent::LlmResponse, AgentEvent::ToolCallNeeded,
-            AgentEvent::ToolResult, AgentEvent::Timeout, AgentEvent::Cancel,
-            AgentEvent::ComposeDone, AgentEvent::ThinkingDone,
+            AgentEvent::UserMessage,
+            AgentEvent::LlmResponse,
+            AgentEvent::ToolCallNeeded,
+            AgentEvent::ToolResult,
+            AgentEvent::Timeout,
+            AgentEvent::Cancel,
+            AgentEvent::ComposeDone,
+            AgentEvent::ThinkingDone,
         ];
         for ev in &events {
             assert_eq!(agent_transition(AgentPhase::Error, ev), None);
@@ -150,8 +163,11 @@ mod tests {
     #[test]
     fn test_cancel_from_non_terminal() {
         let phases = [
-            AgentPhase::Idle, AgentPhase::Thinking, AgentPhase::CallingTool,
-            AgentPhase::AwaitingToolResult, AgentPhase::Composing,
+            AgentPhase::Idle,
+            AgentPhase::Thinking,
+            AgentPhase::CallingTool,
+            AgentPhase::AwaitingToolResult,
+            AgentPhase::Composing,
         ];
         for p in &phases {
             let r = agent_transition(*p, &AgentEvent::Cancel);
@@ -162,8 +178,11 @@ mod tests {
     #[test]
     fn test_timeout_from_non_terminal() {
         let phases = [
-            AgentPhase::Idle, AgentPhase::Thinking, AgentPhase::CallingTool,
-            AgentPhase::AwaitingToolResult, AgentPhase::Composing,
+            AgentPhase::Idle,
+            AgentPhase::Thinking,
+            AgentPhase::CallingTool,
+            AgentPhase::AwaitingToolResult,
+            AgentPhase::Composing,
         ];
         for p in &phases {
             let r = agent_transition(*p, &AgentEvent::Timeout);
@@ -173,8 +192,14 @@ mod tests {
 
     #[test]
     fn test_invalid_transition_returns_none() {
-        assert_eq!(agent_transition(AgentPhase::Idle, &AgentEvent::LlmResponse), None);
-        assert_eq!(agent_transition(AgentPhase::Composing, &AgentEvent::UserMessage), None);
+        assert_eq!(
+            agent_transition(AgentPhase::Idle, &AgentEvent::LlmResponse),
+            None
+        );
+        assert_eq!(
+            agent_transition(AgentPhase::Composing, &AgentEvent::UserMessage),
+            None
+        );
     }
 
     #[test]

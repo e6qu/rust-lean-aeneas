@@ -1,7 +1,7 @@
-use message_protocol::message::*;
-use message_protocol::serialize::serialize;
 use message_protocol::deserialize::deserialize;
 use message_protocol::framing::FrameAccumulator;
+use message_protocol::message::*;
+use message_protocol::serialize::serialize;
 
 // ---------------------------------------------------------------------------
 // Roundtrip tests: serialize then deserialize should recover the original
@@ -86,7 +86,11 @@ fn roundtrip_all_cmd_types() {
 
 #[test]
 fn roundtrip_all_error_codes() {
-    let codes = [ErrorCode::InvalidInput, ErrorCode::NotFound, ErrorCode::Internal];
+    let codes = [
+        ErrorCode::InvalidInput,
+        ErrorCode::NotFound,
+        ErrorCode::Internal,
+    ];
     for code in &codes {
         let msg = Message::Error(code.clone(), b"detail".to_vec());
         let bytes = serialize(&msg);

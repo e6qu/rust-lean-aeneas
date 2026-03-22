@@ -1,0 +1,7 @@
+# Clippy configuration for the tutorial series.
+# Some idiomatic Rust patterns are intentionally avoided for Aeneas compatibility:
+# - Manual range checks instead of .contains() / .is_ascii_digit()
+# - Explicit while loops instead of iterator chains
+# - Vec::new() + push instead of vec![] in some cases
+# - Result<_, ()> return types (Aeneas models these directly)
+# - No Default impl on types designed for Aeneas translation

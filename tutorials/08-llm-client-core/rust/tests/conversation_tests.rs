@@ -1,5 +1,5 @@
-use llm_client_core::message_types::*;
 use llm_client_core::conversation::*;
+use llm_client_core::message_types::*;
 
 fn user_msg(s: &str) -> ChatMessage {
     ChatMessage::RoleMessage(Role::User, s.as_bytes().to_vec())

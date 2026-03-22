@@ -22,10 +22,9 @@ pub fn router_new() -> Router {
 
 /// Subscribe an agent to a topic.
 pub fn router_subscribe(router: &mut Router, topic_id: u32, agent_id: AgentId) {
-    router.subscriptions.push(TopicSubscription {
-        topic_id,
-        agent_id,
-    });
+    router
+        .subscriptions
+        .push(TopicSubscription { topic_id, agent_id });
 }
 
 /// Resolve a recipient to a list of concrete agent IDs.

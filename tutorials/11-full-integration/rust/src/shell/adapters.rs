@@ -73,7 +73,10 @@ mod tests {
 
     #[test]
     fn printable_becomes_keypress() {
-        assert_eq!(adapt_key_event(b'a' as u32, 0), AppEvent::KeyPress(b'a' as u32));
+        assert_eq!(
+            adapt_key_event(b'a' as u32, 0),
+            AppEvent::KeyPress(b'a' as u32)
+        );
     }
 
     #[test]

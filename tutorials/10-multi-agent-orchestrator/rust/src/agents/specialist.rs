@@ -34,7 +34,11 @@ pub fn specialist_process(
                 recipient: Recipient::Direct(envelope.sender),
                 message: Message {
                     kind: MessageKind::Vote,
-                    content_id: if state.specialty % 2 == 0 { 1 } else { 0 },
+                    content_id: if state.specialty.is_multiple_of(2) {
+                        1
+                    } else {
+                        0
+                    },
                 },
                 sequence_num: 0,
             });

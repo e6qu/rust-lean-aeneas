@@ -51,21 +51,20 @@ pub fn render_widget(kind: &WidgetKind, area: Rect, widgets: &[WidgetKind]) -> V
     }
 
     match kind {
-        WidgetKind::TextBox { content, cursor: _ } => {
-            render_textbox(content, area)
-        }
-        WidgetKind::ScrollableList { items, selected, scroll_offset } => {
-            render_scrollable_list(items, *selected, *scroll_offset, area)
-        }
-        WidgetKind::StatusBar { left_text, right_text } => {
-            render_status_bar(left_text, right_text, area)
-        }
+        WidgetKind::TextBox { content, cursor: _ } => render_textbox(content, area),
+        WidgetKind::ScrollableList {
+            items,
+            selected,
+            scroll_offset,
+        } => render_scrollable_list(items, *selected, *scroll_offset, area),
+        WidgetKind::StatusBar {
+            left_text,
+            right_text,
+        } => render_status_bar(left_text, right_text, area),
         WidgetKind::Border { title, child_index } => {
             render_border(title, *child_index, area, widgets)
         }
-        WidgetKind::Container { dir, children } => {
-            render_container(*dir, children, area, widgets)
-        }
+        WidgetKind::Container { dir, children } => render_container(*dir, children, area, widgets),
     }
 }
 
@@ -170,15 +169,16 @@ fn render_border(
     // Draw top border
     let mut col: u16 = 0;
     while col < area.width {
-        let ch = if col == 0 {
-            b'+'
-        } else if col == area.width - 1 {
+        let ch = if col == 0 || col == area.width - 1 {
             b'+'
         } else {
             b'-'
         };
         cells.push(Cell {
-            pos: Position { x: area.x.wrapping_add(col), y: area.y },
+            pos: Position {
+                x: area.x.wrapping_add(col),
+                y: area.y,
+            },
             ch,
             style: 3,
         });
@@ -210,7 +210,10 @@ fn render_border(
                 b'-'
             };
             cells.push(Cell {
-                pos: Position { x: area.x.wrapping_add(col2), y: bottom_y },
+                pos: Position {
+                    x: area.x.wrapping_add(col2),
+                    y: bottom_y,
+                },
                 ch,
                 style: 3,
             });
@@ -222,7 +225,10 @@ fn render_border(
     let mut row: u16 = 1;
     while row < area.height.wrapping_sub(1) {
         cells.push(Cell {
-            pos: Position { x: area.x, y: area.y.wrapping_add(row) },
+            pos: Position {
+                x: area.x,
+                y: area.y.wrapping_add(row),
+            },
             ch: b'|',
             style: 3,
         });

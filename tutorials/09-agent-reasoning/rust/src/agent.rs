@@ -164,9 +164,9 @@ mod tests {
         let cfg = test_config();
         let snap = idle_snapshot();
         let events = vec![
-            AgentEvent::UserMessage,   // Idle -> Thinking
-            AgentEvent::LlmResponse,   // Thinking -> Composing
-            AgentEvent::ComposeDone,   // Composing -> Done
+            AgentEvent::UserMessage, // Idle -> Thinking
+            AgentEvent::LlmResponse, // Thinking -> Composing
+            AgentEvent::ComposeDone, // Composing -> Done
         ];
         let result = agent_run(&cfg, snap, &events);
         assert_eq!(result.phase, AgentPhase::Done);
@@ -182,7 +182,7 @@ mod tests {
             AgentEvent::UserMessage,
             AgentEvent::LlmResponse,
             AgentEvent::ComposeDone,
-            AgentEvent::UserMessage,   // should be ignored — already Done
+            AgentEvent::UserMessage, // should be ignored — already Done
         ];
         let result = agent_run(&cfg, snap, &events);
         assert_eq!(result.phase, AgentPhase::Done);
@@ -194,12 +194,12 @@ mod tests {
         let cfg = test_config();
         let snap = idle_snapshot();
         let events = vec![
-            AgentEvent::UserMessage,     // Idle -> Thinking
-            AgentEvent::ToolCallNeeded,  // Thinking -> CallingTool
-            AgentEvent::ToolResult,      // CallingTool -> AwaitingToolResult
-            AgentEvent::ToolResult,      // AwaitingToolResult -> Thinking
-            AgentEvent::LlmResponse,     // Thinking -> Composing
-            AgentEvent::ComposeDone,     // Composing -> Done
+            AgentEvent::UserMessage,    // Idle -> Thinking
+            AgentEvent::ToolCallNeeded, // Thinking -> CallingTool
+            AgentEvent::ToolResult,     // CallingTool -> AwaitingToolResult
+            AgentEvent::ToolResult,     // AwaitingToolResult -> Thinking
+            AgentEvent::LlmResponse,    // Thinking -> Composing
+            AgentEvent::ComposeDone,    // Composing -> Done
         ];
         let result = agent_run(&cfg, snap, &events);
         assert_eq!(result.phase, AgentPhase::Done);
@@ -210,10 +210,7 @@ mod tests {
     fn test_agent_run_cancel() {
         let cfg = test_config();
         let snap = idle_snapshot();
-        let events = vec![
-            AgentEvent::UserMessage,
-            AgentEvent::Cancel,
-        ];
+        let events = vec![AgentEvent::UserMessage, AgentEvent::Cancel];
         let result = agent_run(&cfg, snap, &events);
         assert_eq!(result.phase, AgentPhase::Error);
     }
@@ -240,9 +237,9 @@ mod tests {
         };
         let snap = idle_snapshot();
         let events = vec![
-            AgentEvent::UserMessage,   // step 1
-            AgentEvent::LlmResponse,   // step 2
-            AgentEvent::ComposeDone,   // would be step 3 — blocked
+            AgentEvent::UserMessage, // step 1
+            AgentEvent::LlmResponse, // step 2
+            AgentEvent::ComposeDone, // would be step 3 — blocked
         ];
         let result = agent_run(&cfg, snap, &events);
         assert_eq!(result.step_count, 2);

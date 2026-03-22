@@ -10,11 +10,7 @@
 /// to understand at a glance, but with a real correctness property
 /// (never panics, correctly detects overflow).
 pub fn checked_add(x: u32, y: u32) -> Option<u32> {
-    if y <= u32::MAX - x {
-        Some(x + y)
-    } else {
-        None
-    }
+    if y <= u32::MAX - x { Some(x + y) } else { None }
 }
 
 /// Safe division: returns Err(()) on division by zero,
@@ -24,11 +20,7 @@ pub fn checked_add(x: u32, y: u32) -> Option<u32> {
 /// Aeneas wraps everything in its own Result (for panics), and our
 /// Result<i64, ()> becomes an inner Result inside that.
 pub fn safe_divide(x: i64, y: i64) -> Result<i64, ()> {
-    if y == 0 {
-        Err(())
-    } else {
-        Ok(x / y)
-    }
+    if y == 0 { Err(()) } else { Ok(x / y) }
 }
 
 /// Absolute value that correctly handles the i64::MIN edge case.
@@ -65,21 +57,13 @@ pub fn clamp(x: i32, lo: i32, hi: i32) -> i32 {
 /// Returns the maximum of two i32 values.
 /// Exercise function for the reader to prove correct.
 pub fn max_of(a: i32, b: i32) -> i32 {
-    if a >= b {
-        a
-    } else {
-        b
-    }
+    if a >= b { a } else { b }
 }
 
 /// Returns the minimum of two i32 values.
 /// Exercise function for the reader to prove correct.
 pub fn min_of(a: i32, b: i32) -> i32 {
-    if a <= b {
-        a
-    } else {
-        b
-    }
+    if a <= b { a } else { b }
 }
 
 #[cfg(test)]
@@ -132,10 +116,10 @@ mod tests {
 
     #[test]
     fn test_clamp() {
-        assert_eq!(clamp(5, 0, 10), 5);   // in range
-        assert_eq!(clamp(-5, 0, 10), 0);  // below
+        assert_eq!(clamp(5, 0, 10), 5); // in range
+        assert_eq!(clamp(-5, 0, 10), 0); // below
         assert_eq!(clamp(15, 0, 10), 10); // above
-        assert_eq!(clamp(0, 0, 10), 0);   // at lower bound
+        assert_eq!(clamp(0, 0, 10), 0); // at lower bound
         assert_eq!(clamp(10, 0, 10), 10); // at upper bound
     }
 

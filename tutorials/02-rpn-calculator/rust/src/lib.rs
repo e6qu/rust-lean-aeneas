@@ -79,6 +79,7 @@ impl Stack {
 ///
 /// Single-character operators (+, -, *, /) are recognized directly.
 /// Everything else is parsed as a non-negative integer.
+#[allow(clippy::manual_is_ascii_check)]
 pub fn tokenize_word(word: &[u8]) -> Result<Token, EvalError> {
     if word.len() == 1 {
         match word[0] {
@@ -86,7 +87,7 @@ pub fn tokenize_word(word: &[u8]) -> Result<Token, EvalError> {
             b'-' => return Ok(Token::Minus),
             b'*' => return Ok(Token::Mul),
             b'/' => return Ok(Token::Div),
-            c if c >= b'0' && c <= b'9' => return Ok(Token::Num((c - b'0') as i64)),
+            c if (b'0'..=b'9').contains(&c) => return Ok(Token::Num((c - b'0') as i64)),
             _ => return Err(EvalError::InvalidToken),
         }
     }
@@ -97,6 +98,7 @@ pub fn tokenize_word(word: &[u8]) -> Result<Token, EvalError> {
 ///
 /// Uses a simple accumulator loop that Aeneas can translate to a
 /// recursive function with a loop fixpoint.
+#[allow(clippy::manual_is_ascii_check)]
 pub fn parse_number(bytes: &[u8]) -> Result<Token, EvalError> {
     if bytes.is_empty() {
         return Err(EvalError::InvalidToken);
@@ -105,7 +107,7 @@ pub fn parse_number(bytes: &[u8]) -> Result<Token, EvalError> {
     let mut i: usize = 0;
     while i < bytes.len() {
         let c = bytes[i];
-        if c < b'0' || c > b'9' {
+        if !(b'0'..=b'9').contains(&c) {
             return Err(EvalError::InvalidToken);
         }
         acc = acc * 10 + (c - b'0') as i64;
@@ -258,15 +260,25 @@ mod tests {
     fn test_evaluate_complex() {
         // 3 4 + 2 * = (3 + 4) * 2 = 14
         let tokens = vec![
-            Token::Num(3), Token::Num(4), Token::Plus,
-            Token::Num(2), Token::Mul,
+            Token::Num(3),
+            Token::Num(4),
+            Token::Plus,
+            Token::Num(2),
+            Token::Mul,
         ];
         assert_eq!(evaluate(&tokens), Ok(14));
 
         // 5 1 2 + 4 * + 3 - = 5 + ((1 + 2) * 4) - 3 = 14
         let tokens = vec![
-            Token::Num(5), Token::Num(1), Token::Num(2), Token::Plus,
-            Token::Num(4), Token::Mul, Token::Plus, Token::Num(3), Token::Minus,
+            Token::Num(5),
+            Token::Num(1),
+            Token::Num(2),
+            Token::Plus,
+            Token::Num(4),
+            Token::Mul,
+            Token::Plus,
+            Token::Num(3),
+            Token::Minus,
         ];
         assert_eq!(evaluate(&tokens), Ok(14));
 

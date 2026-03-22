@@ -27,7 +27,12 @@ pub struct Cell {
 impl Rect {
     /// Create a new rectangle.
     pub fn new(x: u16, y: u16, width: u16, height: u16) -> Self {
-        Rect { x, y, width, height }
+        Rect {
+            x,
+            y,
+            width,
+            height,
+        }
     }
 
     /// Check whether `pos` lies within this rectangle.
@@ -61,7 +66,12 @@ impl Rect {
     pub fn inner(&self, margin: u16) -> Rect {
         let double = margin.wrapping_mul(2);
         if self.width <= double || self.height <= double {
-            return Rect { x: self.x, y: self.y, width: 0, height: 0 };
+            return Rect {
+                x: self.x,
+                y: self.y,
+                width: 0,
+                height: 0,
+            };
         }
         Rect {
             x: self.x.wrapping_add(margin),

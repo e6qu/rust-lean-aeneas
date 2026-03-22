@@ -31,10 +31,7 @@ pub fn send_llm_request(_endpoint: &str, _request_body: &[u8]) -> Result<Vec<u8>
 /// In a real implementation this would return an iterator of chunks.
 ///
 /// Stub: returns an empty iterator.
-pub fn send_streaming_request(
-    _endpoint: &str,
-    _request_body: &[u8],
-) -> Result<Vec<Vec<u8>>, u32> {
+pub fn send_streaming_request(_endpoint: &str, _request_body: &[u8]) -> Result<Vec<Vec<u8>>, u32> {
     // Real implementation would yield chunks as they arrive.
     Ok(Vec::new())
 }

@@ -12,11 +12,11 @@
 //   - The I/O layer (steps 1, 4-5) is axiomatised in IOBoundary.lean.
 //   - The loop is a simple driver that connects them.
 
+use crate::shell::http_client;
+use crate::shell::terminal_io;
 use crate::verified_core::app_state::AppState;
 use crate::verified_core::app_update::app_update;
 use crate::verified_core::app_view::app_view;
-use crate::shell::terminal_io;
-use crate::shell::http_client;
 
 /// Default terminal width for the stub.
 const DEFAULT_WIDTH: u16 = 80;

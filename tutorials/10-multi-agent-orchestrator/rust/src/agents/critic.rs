@@ -27,7 +27,7 @@ pub fn critic_process(
         }
         MessageKind::Vote => {
             // Critics always vote based on their criteria count
-            let vote_value = if state.criteria.len() > 0 { 1 } else { 0 };
+            let vote_value = if !state.criteria.is_empty() { 1 } else { 0 };
             outbox.push(Envelope {
                 sender: self_id,
                 recipient: Recipient::Direct(envelope.sender),

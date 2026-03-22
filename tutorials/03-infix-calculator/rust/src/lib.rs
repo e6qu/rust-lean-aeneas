@@ -55,6 +55,7 @@ pub enum EvalError {
 
 /// Tokenize a byte slice into a list of tokens.
 /// Uses explicit while loop with index — Aeneas-friendly.
+#[allow(clippy::manual_is_ascii_check)]
 pub fn lex(input: &[u8]) -> Result<Vec<Token>, ParseError> {
     let mut tokens: Vec<Token> = Vec::new();
     let mut i: usize = 0;
@@ -105,7 +106,7 @@ pub fn lex(input: &[u8]) -> Result<Vec<Token>, ParseError> {
         } else if ch == b')' {
             tokens.push(Token::RParen);
             i += 1;
-        } else if ch >= b'0' && ch <= b'9' {
+        } else if (b'0'..=b'9').contains(&ch) {
             // Parse multi-digit number
             let mut value: i64 = 0;
             while i < input.len() && input[i] >= b'0' && input[i] <= b'9' {
@@ -244,11 +245,7 @@ mod tests {
         let tokens = lex(b"12 + 34").unwrap();
         assert_eq!(
             tokens,
-            vec![
-                Token::Num(12),
-                Token::Operator(Op::Add),
-                Token::Num(34),
-            ]
+            vec![Token::Num(12), Token::Operator(Op::Add), Token::Num(34),]
         );
     }
 

@@ -142,6 +142,14 @@ See [Tutorial 01: Setup and Hello Proof](tutorials/01-setup-hello-proof/README.m
 - [LEAN.md](LEAN.md) — Everything you need to know about Lean 4
 - [AENEAS.md](AENEAS.md) — Everything you need to know about Aeneas
 
+## Project Documents
+
+- [STATUS.md](STATUS.md) — Current project status and what works/doesn't
+- [PLAN.md](PLAN.md) — Master implementation plan
+- [GAP_ANALYSIS.md](GAP_ANALYSIS.md) — What's missing for real formal verification
+- [DO_NEXT.md](DO_NEXT.md) — Immediate next steps
+- [WHAT_WE_DID.md](WHAT_WE_DID.md) — History of what was built
+
 ## How Each Tutorial Works
 
 Every tutorial (02 and above) has the same structure:

@@ -2,15 +2,47 @@
 
 A comprehensive, beginner-friendly tutorial series that teaches **formal verification of Rust programs** using **Lean 4** and **Aeneas**. The series culminates in a fully verified TUI multi-agent LLM harness.
 
+> **235 files | 32,800+ lines of code | 297 tests | 11 tutorials**
+>
+> Rust code + Lean proofs + deep walkthroughs — from "hello world" to a verified multi-agent system.
+
+## Motivation
+
+Software testing checks examples. Formal verification checks *everything*.
+
+A test suite for a sorting function might check 100 inputs and declare success. A formal proof checks all 2^64 possible inputs simultaneously and guarantees the output is sorted and a permutation of the input. No edge case is missed. No corner case is forgotten. The proof *is* the specification, and if the code compiles against it, the code is correct — by mathematical certainty, not by hope.
+
+**Why does this matter now?**
+
+- **LLM agents are becoming critical infrastructure.** When an agent manages your calendar, writes your code, or handles your finances, "it usually works" isn't good enough. We need mathematical guarantees about agent behavior: that they always terminate, that messages are never lost, that guardrails are never bypassed.
+- **Rust gives us memory safety but not correctness.** A Rust program won't segfault or have data races. But it can still sort wrong, lose messages, or enter impossible states. Formal verification closes this gap.
+- **The tools are finally practical.** Lean 4 is a real programming language (not just a proof assistant). Aeneas translates real Rust code (not toy subsets). The workflow is: write normal Rust, translate automatically, prove properties in Lean. No annotations in your Rust source. No special syntax. No compromise on performance.
+
+**Why this tutorial series?**
+
+Most formal verification resources assume a PhD in type theory. This series assumes you know basic algorithms and nothing else. It builds from `2 + 3 = 5` to proving that a multi-agent LLM orchestrator correctly routes messages, fairly schedules agents, and always terminates within its budget — and every step along the way is explained for a total beginner.
+
 ## What This Project Is
 
 This project demonstrates how to **prove Rust programs correct** — not just that they compile, not just that they pass tests, but that they satisfy precise mathematical specifications for *all possible inputs*.
 
 The key tools:
 
-- **Rust** — the systems programming language whose type system guarantees memory safety
-- **Lean 4** — a theorem prover and programming language that can express and verify mathematical proofs
-- **Aeneas** — a tool that translates Rust code into pure functional Lean code, enabling formal proofs about Rust programs
+- **[Rust](https://www.rust-lang.org/)** — the systems programming language whose type system guarantees memory safety
+- **[Lean 4](https://lean-lang.org/)** — a theorem prover and programming language that can express and verify mathematical proofs
+- **[Aeneas](https://github.com/AeneasVerif/aeneas)** — a tool that translates Rust code into pure functional Lean code, enabling formal proofs about Rust programs
+
+### What gets verified
+
+| Property | Meaning | Example |
+|----------|---------|---------|
+| **No panics** | Function never crashes for any input | `checked_add` handles all `u32` pairs |
+| **Functional correctness** | Output matches mathematical specification | RPN evaluator computes the right answer |
+| **Roundtrip** | Decode(Encode(x)) = x for all x | Message serialization is lossless |
+| **Invariant preservation** | Critical properties always hold | Traffic light never shows green both ways |
+| **Termination** | Program always finishes | Agent loop exits within step budget |
+| **Fairness** | Resources are allocated equitably | Round-robin gives each agent equal turns |
+| **Composition** | Components work correctly together | User message reaches the right agent end-to-end |
 
 ## Architecture: Functional Core, Imperative Shell
 

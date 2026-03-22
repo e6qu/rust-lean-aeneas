@@ -1,0 +1,17 @@
+[package]
+name = "full_integration"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+# crossterm and ureq would be used by the shell layer in a real build.
+# They are listed here for documentation but not required for the verified core.
+# crossterm = { version = "0.28", optional = true }
+# ureq = { version = "2", optional = true }
+
+[features]
+default = []
+shell = []  # Enable shell layer (would pull in crossterm + ureq)

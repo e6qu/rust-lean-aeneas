@@ -1,0 +1,30 @@
+# Rust build artifacts
+**/target/
+**/*.rs.bk
+**/Cargo.lock
+
+# Lean build artifacts
+**/.lake/
+**/lake-manifest.json
+**/lake-packages/
+**/*.olean
+**/*.ilean
+**/*.trace
+
+# Aeneas artifacts
+**/*.llbc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local

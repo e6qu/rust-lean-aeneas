@@ -1,13 +1,31 @@
 # Rust + Lean 4 Formal Verification via Aeneas: Master Plan
 
 > This is the master implementation plan. For the project overview, see [README.md](README.md).
+> For current status, see [STATUS.md](STATUS.md). For gap analysis, see [GAP_ANALYSIS.md](GAP_ANALYSIS.md).
+
+## Purpose
+
+**Formally verify Rust programs using Lean 4 and Aeneas.**
+
+The verification pipeline:
+1. Write Rust code
+2. Translate to pure Lean via Aeneas (`charon` + `aeneas`)
+3. Write Lean proofs about the generated code
+4. `lake build` typechecks proofs → Rust code is mathematically proven correct
 
 ## Context
 
-Build a comprehensive, beginner-friendly tutorial series that teaches formal verification of Rust programs using Lean 4 and Aeneas. The series culminates in a verified TUI multi-agent LLM harness. Each tutorial includes actual working Rust code, Aeneas-generated Lean code, and deep hand-written Lean proofs proving functional correctness.
+Build a comprehensive, beginner-friendly tutorial series that teaches formal verification of Rust programs using Lean 4 and Aeneas. The series culminates in a verified TUI multi-agent LLM harness. Each tutorial includes actual working Rust code, **real** Aeneas-generated Lean code, and Lean proofs verified by the Lean typechecker.
 
 Target audience: total beginners (basic algorithm knowledge only).
 Architecture: "Functional Core, Imperative Shell" throughout.
+
+## Related Documents
+
+- [STATUS.md](STATUS.md) — Current project status
+- [WHAT_WE_DID.md](WHAT_WE_DID.md) — History of what was built
+- [GAP_ANALYSIS.md](GAP_ANALYSIS.md) — What's missing for real verification
+- [DO_NEXT.md](DO_NEXT.md) — Immediate next steps
 
 ## Project Structure
 

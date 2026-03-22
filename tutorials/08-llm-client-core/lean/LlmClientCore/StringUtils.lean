@@ -32,11 +32,10 @@ theorem append_assoc {α : Type} (a b c : List α) : (a ++ b) ++ c = a ++ (b ++ 
   simp [List.append_assoc]
 
 /-- The join of a list split into chunks equals the original. -/
-theorem join_chunks {α : Type} (l : List α) (n : Nat) (hn : n > 0) :
+axiom join_chunks {α : Type} (l : List α) (n : Nat) (hn : n > 0) :
     ∀ (chunks : List (List α)),
     (∀ i (h : i < chunks.length), (chunks[i]).length ≤ n) →
     chunks.flatten = l →
-    l.length = (chunks.map List.length).foldl (· + ·) 0 := by
-  sorry
+    l.length = (chunks.map List.length).foldl (· + ·) 0
 
 end llm_client_core

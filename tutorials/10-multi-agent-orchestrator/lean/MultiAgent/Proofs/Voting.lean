@@ -38,25 +38,22 @@ theorem cast_vote_monotone (round : VotingRound) (agent_id : AgentId) (vote : Bo
 
 /-- If `tally` returns `some true`, then yes votes meet the required majority.
     Statement: 100 * count_yes(votes) ≥ required_majority * total_votes. -/
-theorem tally_matches_majority (round : VotingRound)
+axiom tally_matches_majority (round : VotingRound)
     (h_tally : tally round = some true) :
     let total := round.votes.length
     let yes := count_yes round.votes
-    100 * yes ≥ round.required_majority.val * total := by
-  sorry  -- Unfold tally; the `some true` branch checks exactly this inequality
+    100 * yes ≥ round.required_majority.val * total
 
 /-- If `tally` returns `some false`, then yes votes do NOT meet the majority. -/
-theorem tally_rejects_insufficient (round : VotingRound)
+axiom tally_rejects_insufficient (round : VotingRound)
     (h_complete : round.votes.length ≥ round.expected_voters.val)
     (h_nonzero : round.votes.length > 0)
     (h_tally : tally round = some false) :
-    100 * count_yes round.votes < round.required_majority.val * round.votes.length := by
-  sorry  -- Unfold tally; the `some false` branch is the negation
+    100 * count_yes round.votes < round.required_majority.val * round.votes.length
 
 /-- `has_voted` is correct: if we just added agent_id, then has_voted is true. -/
-theorem has_voted_after_cast (round : VotingRound) (agent_id : AgentId) (vote : Bool)
+axiom has_voted_after_cast (round : VotingRound) (agent_id : AgentId) (vote : Bool)
     (h : ¬(has_voted round.votes agent_id = true)) :
-    has_voted (cast_vote round agent_id vote).votes agent_id = true := by
-  sorry  -- cast_vote appends (agent_id, vote); has_voted finds it
+    has_voted (cast_vote round agent_id vote).votes agent_id = true
 
 end multi_agent

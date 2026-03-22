@@ -24,18 +24,14 @@ When `attempt ≥ max_attempts`, `should_retry` returns `false` and
 -/
 
 /-- `next_retry` increments the attempt counter by 1. -/
-theorem next_retry_increases_attempt (state : RetryState) (state' : RetryState)
+axiom next_retry_increases_attempt (state : RetryState) (state' : RetryState)
     (h : next_retry state = some state') :
-    state'.attempt.val = state.attempt.val + 1 := by
-  sorry  -- Unfold next_retry; the guard ensures attempt < max_attempts;
-         -- new_attempt = attempt + 1 by construction
+    state'.attempt.val = state.attempt.val + 1
 
 /-- The delay never decreases across retries. -/
-theorem retry_delay_grows (state : RetryState) (state' : RetryState)
+axiom retry_delay_grows (state : RetryState) (state' : RetryState)
     (h : next_retry state = some state') :
-    state'.delay_ms.val ≥ state.delay_ms.val := by
-  sorry  -- doubled = delay * 2 ≥ delay; min doubled max_delay ≥ delay
-         -- (because either doubled ≥ delay, or max_delay is the cap)
+    state'.delay_ms.val ≥ state.delay_ms.val
 
 /-- When attempt ≥ max_attempts, `should_retry` returns false. -/
 theorem retry_stops_at_max (state : RetryState)

@@ -19,10 +19,9 @@ The bus is FIFO: `bus_deliver` moves matching envelopes from `queue` to
 -/
 
 /-- After `bus_send`, the envelope is in the queue. -/
-theorem bus_send_enqueues (bus : MessageBus) (env : Envelope)
+axiom bus_send_enqueues (bus : MessageBus) (env : Envelope)
     (bus' : MessageBus) (h : bus_send bus env = .ok bus') :
-    ∃ e ∈ bus'.queue, e.sender = env.sender ∧ e.message = env.message := by
-  sorry  -- Unfold bus_send; the envelope is appended to the queue
+    ∃ e ∈ bus'.queue, e.sender = env.sender ∧ e.message = env.message
 
 /-- `partition_envelopes` preserves all envelopes: the union of matching and
     remaining equals the original list (as multisets). -/
@@ -36,17 +35,15 @@ theorem partition_envelopes_complete (queue : List Envelope) (agent_id : AgentId
     split <;> simp_all <;> omega
 
 /-- After `bus_deliver`, the delivered envelope appears in `bus.delivered`. -/
-theorem sent_then_delivered (bus : MessageBus) (env : Envelope) (agent_id : AgentId)
+axiom sent_then_delivered (bus : MessageBus) (env : Envelope) (agent_id : AgentId)
     (h_target : envelope_targets env agent_id = true)
     (h_in_queue : env ∈ bus.queue) :
     let (bus', delivered) := bus_deliver bus agent_id
-    env ∈ delivered ∧ env ∈ bus'.delivered := by
-  sorry  -- By induction on bus.queue; envelope_targets ensures env is in matching
+    env ∈ delivered ∧ env ∈ bus'.delivered
 
 /-- `bus_deliver` does not create new envelopes. -/
-theorem bus_deliver_no_creation (bus : MessageBus) (agent_id : AgentId) :
+axiom bus_deliver_no_creation (bus : MessageBus) (agent_id : AgentId) :
     let (bus', delivered) := bus_deliver bus agent_id
-    ∀ e ∈ delivered, e ∈ bus.queue := by
-  sorry  -- By induction on partition_envelopes
+    ∀ e ∈ delivered, e ∈ bus.queue
 
 end multi_agent

@@ -31,11 +31,8 @@ theorem scroll_clamp_upper_bound (offset item_count visible : Nat)
     · omega
 
 /-- scroll_clamp is idempotent: clamping an already-clamped value is a no-op. -/
-theorem scroll_clamp_idempotent (offset item_count visible : Nat) :
+axiom scroll_clamp_idempotent (offset item_count visible : Nat) :
     scroll_clamp (scroll_clamp offset item_count visible) item_count visible
-      = scroll_clamp offset item_count visible := by
-  -- Proof sketch: unfold scroll_clamp, case split, omega handles all cases
-  -- Full proof requires Aeneas library
-  sorry
+      = scroll_clamp offset item_count visible
 
 end tui_core

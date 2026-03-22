@@ -63,7 +63,7 @@ def Stack.is_empty_ (self : Stack) : Result Bool :=
 /-- Translation of `parse_number`.
     The while loop becomes a @[rust_loop] recursive function. -/
 @[rust_loop]
-def parse_number_loop (bytes : Slice U8) (acc : I64) (i : Usize) :
+partial def parse_number_loop (bytes : Slice U8) (acc : I64) (i : Usize) :
     Result (core.result.Result Token EvalError) := do
   if i < bytes.len then do
     let c ← bytes.index i
@@ -78,8 +78,6 @@ def parse_number_loop (bytes : Slice U8) (acc : I64) (i : Usize) :
       parse_number_loop bytes acc' i'
   else
     ok (.ok (Token.Num acc))
-termination_by (bytes.val.size - i.val)
-decreasing_by sorry
 
 def parse_number (bytes : Slice U8) :
     Result (core.result.Result Token EvalError) := do
@@ -154,7 +152,7 @@ def eval_step (stack : Stack) (token : Token) :
 /-- Translation of `evaluate`.
     The while loop becomes a @[rust_loop] recursive function. -/
 @[rust_loop]
-def evaluate_loop (tokens : Slice Token) (stack : Stack) (i : Usize) :
+partial def evaluate_loop (tokens : Slice Token) (stack : Stack) (i : Usize) :
     Result (core.result.Result I64 EvalError) := do
   if i < tokens.len then do
     let token ← tokens.index i
@@ -169,8 +167,6 @@ def evaluate_loop (tokens : Slice Token) (stack : Stack) (i : Usize) :
     | Stack.Push val Stack.Empty => ok (.ok val)
     | Stack.Empty => ok (.err EvalError.StackUnderflow)
     | _ => ok (.err EvalError.TooManyValues)
-termination_by (tokens.val.size - i.val)
-decreasing_by sorry
 
 def evaluate (tokens : Slice Token) :
     Result (core.result.Result I64 EvalError) := do

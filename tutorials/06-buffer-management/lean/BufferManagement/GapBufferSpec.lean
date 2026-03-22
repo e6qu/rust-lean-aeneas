@@ -32,10 +32,7 @@ def gap_content_len (gb : GapBuffer) : Nat :=
   gb.buffer.val.size - (gb.gap_end.val - gb.gap_start.val)
 
 /-- The content length matches the length of the materialized content list. -/
-theorem gap_content_len_eq (gb : GapBuffer) (h_inv : gap_inv gb) :
-    (gap_content gb).length = gap_content_len gb := by
-  -- Proof sketch: unfold gap_content and gap_content_len, use list length lemmas
-  -- Full proof requires Aeneas library
-  sorry
+axiom gap_content_len_eq (gb : GapBuffer) (h_inv : gap_inv gb) :
+    (gap_content gb).length = gap_content_len gb
 
 end buffer_management

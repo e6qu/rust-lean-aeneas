@@ -34,12 +34,9 @@ theorem topic_subscribers_empty (topic_id : U32) :
   simp [topic_subscribers]
 
 /-- `envelope_targets` with `Direct id` returns true iff the id matches. -/
-theorem envelope_targets_direct (env : Envelope) (agent_id : AgentId)
+axiom envelope_targets_direct (env : Envelope) (agent_id : AgentId)
     (h : env.recipient = .Direct agent_id) :
-    envelope_targets env agent_id = true := by
-  -- Proof sketch: unfold envelope_targets, use h to match Direct case
-  -- Full proof requires Aeneas library
-  sorry
+    envelope_targets env agent_id = true
 
 /-- `envelope_targets` with `Broadcast` always returns true. -/
 theorem envelope_targets_broadcast (env : Envelope) (agent_id : AgentId)

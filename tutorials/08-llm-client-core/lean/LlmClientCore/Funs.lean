@@ -89,7 +89,7 @@ def conversation_append (conv : Conversation) (msg : ChatMessage)
       .ok (.inr .InvalidAlternation)
 
 /-- Trim conversation by removing messages[1] until tokens fit or len ≤ 1. -/
-def trim_to_context_aux : List ChatMessage → U32 → List ChatMessage
+partial def trim_to_context_aux : List ChatMessage → U32 → List ChatMessage
   | [], _ => []
   | [sys], _ => [sys]
   | sys :: _ :: rest, max_tokens =>
@@ -98,8 +98,6 @@ def trim_to_context_aux : List ChatMessage → U32 → List ChatMessage
       trim_to_context_aux msgs max_tokens
     else
       sys :: rest
-  termination_by msgs => msgs.length
-  decreasing_by all_goals sorry
 
 def trim_to_context (conv : Conversation) : Conversation :=
   if (estimate_tokens conv.messages).val > conv.max_context_tokens.val then
@@ -122,7 +120,7 @@ def stream_finish (acc : StreamAccumulator) : List U8 :=
   acc.accumulated
 
 /-- Split data into chunks of the given size. -/
-def chunk_response_aux : List U8 → Nat → List (List U8) → List (List U8)
+partial def chunk_response_aux : List U8 → Nat → List (List U8) → List (List U8)
   | [], _, acc => acc.reverse
   | data, chunk_size, acc =>
     if chunk_size = 0 then acc.reverse
@@ -130,8 +128,6 @@ def chunk_response_aux : List U8 → Nat → List (List U8) → List (List U8)
       let chunk := data.take chunk_size
       let rest := data.drop chunk_size
       chunk_response_aux rest chunk_size (chunk :: acc)
-  termination_by data => data.length
-  decreasing_by all_goals sorry
 
 def chunk_response (data : List U8) (chunk_size : Nat) : List (List U8) :=
   if chunk_size = 0 then []

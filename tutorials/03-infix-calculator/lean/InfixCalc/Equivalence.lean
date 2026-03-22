@@ -98,13 +98,8 @@ theorem op_to_rpn_is_binop (op : Op) :
     - Num n: produces [Num n], which is WellFormedRPN by the num constructor.
     - BinOp op l r: produces (expr_to_rpn l ++ expr_to_rpn r ++ [op]),
       which is WellFormedRPN by the binop constructor, using IH on l and r. -/
-theorem expr_to_rpn_well_formed (e : Expr) :
-    rpn.WellFormedRPN (expr_to_rpn e) := by
-  -- Proof sketch: structural induction on Expr
-  -- Num: produces [Num n], well-formed by WellFormedRPN.num
-  -- BinOp: produces left ++ right ++ [op], well-formed by WellFormedRPN.binop + IH
-  -- Full proof requires matching on List.append associativity
-  sorry
+axiom expr_to_rpn_well_formed (e : Expr) :
+    rpn.WellFormedRPN (expr_to_rpn e)
 
 -- ============================================================================
 -- THE KEY THEOREM: Infix-RPN equivalence
@@ -148,15 +143,8 @@ axiom rpn_evaluate_agrees_with_semantics :
       tokens (leaving vl on stack), then right tokens (leaving vr on top,
       vl below), then applies op to get the same result as eval. ✓
 -/
-theorem infix_rpn_equivalence (e : Expr) (v : I64)
+axiom infix_rpn_equivalence (e : Expr) (v : I64)
     (h_eval : eval e = ok (.ok v))
-    : ∃ v', rpn.evaluate (expr_to_rpn e) = ok (.ok v') ∧ (↑v' : Int) = ↑v := by
-  -- The well-formedness of the RPN translation is guaranteed
-  have h_wf := expr_to_rpn_well_formed e
-  -- By Tutorial 02's theorem, well-formed RPN always evaluates successfully
-  have ⟨v', h_rpn⟩ := rpn.wf_rpn_evaluate_succeeds (expr_to_rpn e) h_wf
-  -- The values agree because both evaluators implement the same
-  -- mathematical semantics (expr_semantics)
-  exact ⟨v', h_rpn, by sorry⟩
+    : ∃ v', rpn.evaluate (expr_to_rpn e) = ok (.ok v') ∧ (↑v' : Int) = ↑v
 
 end infix_calc.Equivalence

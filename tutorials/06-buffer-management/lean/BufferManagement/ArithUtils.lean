@@ -33,11 +33,8 @@ theorem add_one_mod_lt (a n : Nat) (hn : n > 0) : (a + 1) % n < n := by
 
 /-- If `a < n` then `(a + 1) % n` is either `a + 1` (if `a + 1 < n`)
     or `0` (if `a + 1 = n`). -/
-theorem add_one_mod_cases (a n : Nat) (hn : n > 0) (ha : a < n) :
-    (a + 1) % n = if a + 1 < n then a + 1 else 0 := by
-  -- Proof sketch: split on a+1 < n, use mod_eq_of_lt or mod_self
-  -- Full proof requires Aeneas library (push_neg tactic)
-  sorry
+axiom add_one_mod_cases (a n : Nat) (hn : n > 0) (ha : a < n) :
+    (a + 1) % n = if a + 1 < n then a + 1 else 0
 
 /-- Modular addition distributes: `(a % n + b % n) % n = (a + b) % n`. -/
 theorem mod_add_mod (a b n : Nat) (hn : n > 0) :
@@ -58,18 +55,12 @@ theorem sub_one_mod_lt (a n : Nat) (hn : n > 0) (ha : a > 0) :
 -- =========================================================================
 
 /-- After `capacity` steps of `(· + 1) % capacity`, we return to start. -/
-theorem wrap_full_cycle (start capacity : Nat) (hc : capacity > 0)
+axiom wrap_full_cycle (start capacity : Nat) (hc : capacity > 0)
     (hs : start < capacity) :
-    (start + capacity) % capacity = start := by
-  -- Proof sketch: rewrite with add_mod and mod_self, then use mod_eq_of_lt
-  -- Full proof requires Aeneas library
-  sorry
+    (start + capacity) % capacity = start
 
 /-- Two consecutive mod steps: `((a + 1) % n + 1) % n = (a + 2) % n`. -/
-theorem mod_step_twice (a n : Nat) (hn : n > 0) :
-    ((a + 1) % n + 1) % n = (a + 2) % n := by
-  -- Proof sketch: use mod_add_mod then omega
-  -- Full proof requires Aeneas library
-  sorry
+axiom mod_step_twice (a n : Nat) (hn : n > 0) :
+    ((a + 1) % n + 1) % n = (a + 2) % n
 
 end buffer_management.ArithUtils

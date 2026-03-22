@@ -1,0 +1,156 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch or SHA to run against"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+  # Intentional Aeneas-compatible patterns allowed globally
+  CLIPPY_ALLOWS: "-A clippy::result_unit_err -A clippy::new_without_default"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Per-tutorial Rust jobs: fmt, clippy, test, build
+  # ---------------------------------------------------------------------------
+  rust:
+    name: "Rust: ${{ matrix.tutorial }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tutorial:
+          - 01-setup-hello-proof
+          - 02-rpn-calculator
+          - 03-infix-calculator
+          - 04-state-machines
+          - 05-message-protocol
+          - 06-buffer-management
+          - 07-tui-core
+          - 08-llm-client-core
+          - 09-agent-reasoning
+          - 10-multi-agent-orchestrator
+          - 11-full-integration
+    defaults:
+      run:
+        working-directory: tutorials/${{ matrix.tutorial }}/rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || '' }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            tutorials/${{ matrix.tutorial }}/rust/target
+          key: rust-${{ matrix.tutorial }}-${{ runner.os }}-${{ hashFiles(format('tutorials/{0}/rust/Cargo.toml', matrix.tutorial)) }}
+          restore-keys: rust-${{ matrix.tutorial }}-${{ runner.os }}-
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Lint (clippy)
+        run: cargo clippy -- -D warnings ${{ env.CLIPPY_ALLOWS }}
+
+      - name: Build
+        run: cargo build
+
+      - name: Test
+        run: cargo test
+
+  # ---------------------------------------------------------------------------
+  # Per-tutorial Lean verification
+  # ---------------------------------------------------------------------------
+  lean:
+    name: "Lean: ${{ matrix.tutorial }}"
+    runs-on: ubuntu-latest
+    # Lean builds depend on the Aeneas library and a matching Lean toolchain.
+    # Until the Aeneas dependency is pinned to a stable release, Lean jobs
+    # are informational — they should not block PRs from merging.
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        tutorial:
+          - 01-setup-hello-proof
+          - 02-rpn-calculator
+          - 03-infix-calculator
+          - 04-state-machines
+          - 05-message-protocol
+          - 06-buffer-management
+          - 07-tui-core
+          - 08-llm-client-core
+          - 09-agent-reasoning
+          - 10-multi-agent-orchestrator
+          - 11-full-integration
+    defaults:
+      run:
+        working-directory: tutorials/${{ matrix.tutorial }}/lean
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || '' }}
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Show Lean version
+        run: |
+          cat lean-toolchain
+          lean --version || true
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan/toolchains
+            tutorials/${{ matrix.tutorial }}/lean/.lake
+          key: lean-${{ matrix.tutorial }}-${{ runner.os }}-${{ hashFiles(format('tutorials/{0}/lean/lean-toolchain', matrix.tutorial), format('tutorials/{0}/lean/lakefile.lean', matrix.tutorial)) }}
+          restore-keys: lean-${{ matrix.tutorial }}-${{ runner.os }}-
+
+      - name: Lake build (typecheck proofs)
+        run: lake build
+        # Lean builds depend on the Aeneas library from GitHub.
+        # If the dependency is unavailable or API-incompatible,
+        # this step will fail — which is the desired signal.
+
+  # ---------------------------------------------------------------------------
+  # Summary gate — all per-project jobs must pass
+  # ---------------------------------------------------------------------------
+  ci-pass:
+    name: CI passed
+    runs-on: ubuntu-latest
+    needs: [rust, lean]
+    if: always()
+    steps:
+      - name: Check all jobs
+        run: |
+          echo "Rust: ${{ needs.rust.result }}"
+          echo "Lean: ${{ needs.lean.result }}"
+          if [[ "${{ needs.rust.result }}" != "success" ]]; then
+            echo "::error::Rust jobs failed"
+            exit 1
+          fi
+          if [[ "${{ needs.lean.result }}" == "failure" ]]; then
+            echo "::warning::Lean jobs failed (informational — Aeneas dependency may need updating)"
+          fi
+          echo "CI passed (Rust: required, Lean: informational)"

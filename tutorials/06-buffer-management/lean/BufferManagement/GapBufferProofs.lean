@@ -102,8 +102,8 @@ theorem delete_before_removes_byte (gb gb' : GapBuffer)
     (h_inv : gap_inv gb)
     (h_del : GapBuffer.delete_before gb = .ok (true, gb')) :
     gap_content gb' =
-      (gap_content gb).take (gb.gap_start - 1) ++
-      (gap_content gb).drop gb.gap_start := by
+      (gap_content gb).take (gb.gap_start.val - 1) ++
+      (gap_content gb).drop gb.gap_start.val := by
   simp [gap_content, GapBuffer.delete_before] at *
   sorry -- requires List.take/drop reasoning
 

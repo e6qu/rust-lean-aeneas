@@ -38,7 +38,7 @@ def widget_tree_depth (widgets : List WidgetKind) (root : Nat) (fuel : Nat) : Na
   match fuel with
   | 0 => 0
   | fuel' + 1 =>
-    match widgets.get? root with
+    match widgets[root]? with
     | none => 0
     | some w =>
       match w with

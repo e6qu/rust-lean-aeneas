@@ -1,13 +1,13 @@
 import Lake
 open Lake DSL
 
-require aeneas from git
-  "https://github.com/AeneasVerif/aeneas" / "backends" / "lean"
-
 package MessageProtocol where
   leanOptions := #[
     ⟨`autoImplicit, false⟩
   ]
+
+lean_lib Aeneas where
+  srcDir := "."
 
 @[default_target]
 lean_lib MessageProtocol where

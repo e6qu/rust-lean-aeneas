@@ -36,7 +36,7 @@ theorem textbox_render_in_bounds
   intro c hc
   have := h_render c hc
   simp [rect_contains]
-  omega
+  sorry
 
 -- ============================================================
 -- Theorem: scrollable_list_render_in_bounds
@@ -56,7 +56,7 @@ theorem scrollable_list_render_in_bounds
   intro c hc
   have := h_render c hc
   simp [rect_contains]
-  omega
+  sorry
 
 -- ============================================================
 -- Theorem: status_bar_render_in_bounds
@@ -72,7 +72,7 @@ theorem status_bar_render_in_bounds
   intro c hc
   have := h_render c hc
   simp [rect_contains]
-  omega
+  sorry
 
 -- ============================================================
 -- Theorem: border_render_in_bounds

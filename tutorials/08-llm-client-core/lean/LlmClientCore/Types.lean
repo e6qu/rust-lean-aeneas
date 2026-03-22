@@ -11,7 +11,7 @@ inductive Role where
   | System
   | User
   | Assistant
-deriving DecidableEq, Repr
+deriving DecidableEq, BEq, Repr, Inhabited
 
 /-- Tool call information from the assistant. -/
 structure ToolCallInfo where
@@ -32,6 +32,9 @@ inductive ChatMessage where
   | ToolCall (info : ToolCallInfo)
   | ToolResult (info : ToolResultInfo)
 deriving DecidableEq, Repr
+
+instance : Inhabited ChatMessage where
+  default := .RoleMessage default []
 
 /-- Simplified tool definition. -/
 structure ToolDef where

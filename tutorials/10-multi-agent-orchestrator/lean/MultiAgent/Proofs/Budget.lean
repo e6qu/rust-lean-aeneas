@@ -38,7 +38,7 @@ theorem orchestrator_run_aux_bounded (fuel : Nat) (state : OrchestratorState)
 theorem orchestrator_terminates_within_budget
     (state : OrchestratorState)
     (state' : OrchestratorState)
-    (h_init : state.turn_count = ⟨0, by omega⟩)
+    (h_init : state.turn_count = ⟨0⟩)
     (h_run : orchestrator_run state = .ok state') :
     state'.turn_count.val ≤ state.config.turn_budget.val := by
   sorry  -- Follows from orchestrator_run_aux_bounded with fuel = turn_budget

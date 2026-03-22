@@ -12,8 +12,8 @@ namespace tui_core
 
 /-- Check whether a position lies within a rectangle. -/
 def rect_contains (r : Rect) (p : Position) : Bool :=
-  p.x >= r.x && p.x < r.x + r.width &&
-  p.y >= r.y && p.y < r.y + r.height
+  p.x.val >= r.x.val && p.x.val < r.x.val + r.width.val &&
+  p.y.val >= r.y.val && p.y.val < r.y.val + r.height.val
 
 /-- Total area of a rectangle as a natural number. -/
 def rect_area (r : Rect) : Nat :=
@@ -21,19 +21,19 @@ def rect_area (r : Rect) : Nat :=
 
 /-- Check whether two rectangles overlap. -/
 def rect_intersects (a b : Rect) : Bool :=
-  a.x < b.x + b.width && b.x < a.x + a.width &&
-  a.y < b.y + b.height && b.y < a.y + a.height
+  a.x.val < b.x.val + b.width.val && b.x.val < a.x.val + a.width.val &&
+  a.y.val < b.y.val + b.height.val && b.y.val < a.y.val + a.height.val
 
 /-- Shrink a rectangle inward by a margin on each side. -/
 def rect_inner (r : Rect) (margin : U16) : Rect :=
-  let double := margin * 2
-  if r.width <= double || r.height <= double then
+  let double := margin.val * 2
+  if r.width.val <= double || r.height.val <= double then
     { x := r.x, y := r.y, width := 0, height := 0 }
   else
-    { x := r.x + margin,
-      y := r.y + margin,
-      width := r.width - double,
-      height := r.height - double }
+    { x := ⟨r.x.val + margin.val⟩,
+      y := ⟨r.y.val + margin.val⟩,
+      width := ⟨r.width.val - double⟩,
+      height := ⟨r.height.val - double⟩ }
 
 -- ============================================================
 -- Layout functions
@@ -54,15 +54,15 @@ def split (r : Rect) (dir : SplitDir) (count : Nat) : List Rect :=
         let size := if i = count - 1 then total - offset else piece_size
         let rect := match dir with
           | SplitDir.Horizontal =>
-            { x := ⟨r.x.val + offset, by omega⟩,
+            { x := ⟨r.x.val + offset⟩,
               y := r.y,
-              width := ⟨size, by omega⟩,
+              width := ⟨size⟩,
               height := r.height }
           | SplitDir.Vertical =>
             { x := r.x,
-              y := ⟨r.y.val + offset, by omega⟩,
+              y := ⟨r.y.val + offset⟩,
               width := r.width,
-              height := ⟨size, by omega⟩ }
+              height := ⟨size⟩ }
         rect :: go (i + 1) (offset + piece_size)
     termination_by count - i
     go 0 0
@@ -71,16 +71,18 @@ def split (r : Rect) (dir : SplitDir) (count : Nat) : List Rect :=
 def split_at (r : Rect) (dir : SplitDir) (offset : U16) : Rect × Rect :=
   match dir with
   | SplitDir.Horizontal =>
-    let clamped := if offset > r.width then r.width else offset
+    let clamped := if offset.val > r.width.val then r.width else offset
     let left := { x := r.x, y := r.y, width := clamped, height := r.height }
-    let right := { x := r.x + clamped, y := r.y,
-                   width := r.width - clamped, height := r.height }
+    let right : Rect :=
+      { x := ⟨r.x.val + clamped.val⟩, y := r.y,
+        width := ⟨r.width.val - clamped.val⟩, height := r.height }
     (left, right)
   | SplitDir.Vertical =>
-    let clamped := if offset > r.height then r.height else offset
+    let clamped := if offset.val > r.height.val then r.height else offset
     let top := { x := r.x, y := r.y, width := r.width, height := clamped }
-    let bottom := { x := r.x, y := r.y + clamped,
-                    width := r.width, height := r.height - clamped }
+    let bottom : Rect :=
+      { x := r.x, y := ⟨r.y.val + clamped.val⟩,
+        width := r.width, height := ⟨r.height.val - clamped.val⟩ }
     (top, bottom)
 
 -- ============================================================
@@ -144,7 +146,7 @@ def focus_next (widgets : List WidgetKind) (current : Nat) : Nat :=
       if i >= len then current
       else
         let idx := (current + 1 + i) % len
-        match widgets.get? idx with
+        match widgets[idx]? with
         | some w => if is_focusable w then idx else go (i + 1)
         | none => current
     termination_by len - i
@@ -159,7 +161,7 @@ def focus_prev (widgets : List WidgetKind) (current : Nat) : Nat :=
       if i >= len then current
       else
         let idx := (current + len - 1 - i) % len
-        match widgets.get? idx with
+        match widgets[idx]? with
         | some w => if is_focusable w then idx else go (i + 1)
         | none => current
     termination_by len - i

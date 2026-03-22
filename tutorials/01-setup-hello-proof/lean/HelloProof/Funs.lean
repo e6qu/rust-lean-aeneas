@@ -73,7 +73,7 @@ def safe_abs (x : I64) : Result (core.result.Result I64 Unit) := do
   if x = I64.MIN then
     ok (.err ())
   else if x < (0 : I64) then do
-    let neg_x ← -x
+    let neg_x ← I64.neg x
     ok (.ok neg_x)
   else
     ok (.ok x)

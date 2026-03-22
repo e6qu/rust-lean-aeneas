@@ -35,17 +35,17 @@ theorem read_u64_be_write_u64_be (val : U64) :
   sorry  -- Requires bitwise arithmetic reasoning
 
 /-- Appending then taking gives the prefix. -/
-theorem list_take_append (xs ys : List α) :
+theorem list_take_append {α : Type} (xs ys : List α) :
     (xs ++ ys).take xs.length = xs := by
   simp [List.take_append]
 
 /-- Appending then dropping gives the suffix. -/
-theorem list_drop_append (xs ys : List α) :
+theorem list_drop_append {α : Type} (xs ys : List α) :
     (xs ++ ys).drop xs.length = ys := by
   simp [List.drop_append]
 
 /-- Length of append. -/
-theorem list_append_length (xs ys : List α) :
+theorem list_append_length {α : Type} (xs ys : List α) :
     (xs ++ ys).length = xs.length + ys.length := by
   simp
 

@@ -27,13 +27,13 @@ matches a parameter in the spec.
 theorem find_tool_aux_correct
     (registry : List ToolSpec) (name_id : U32) (base : Nat) (idx : Nat)
     (h : find_tool_aux registry name_id base = some idx) :
-    ∃ spec : ToolSpec, registry.get? (idx - base) = some spec ∧ spec.name_id = name_id := by
+    ∃ spec : ToolSpec, registry[idx - base]? = some spec ∧ spec.name_id = name_id := by
   sorry  -- Induction on registry; the first match returns the current index
 
 theorem tool_call_uses_registered_tool
     (registry : List ToolSpec) (name_id : U32) (idx : Nat)
     (h : find_tool registry name_id = some idx) :
-    ∃ spec : ToolSpec, registry.get? idx = some spec ∧ spec.name_id = name_id := by
+    ∃ spec : ToolSpec, registry[idx]? = some spec ∧ spec.name_id = name_id := by
   sorry  -- Unfold find_tool; apply find_tool_aux_correct with base = 0
 
 /-- If `validate_tool_call` returns true, then every required param is present
